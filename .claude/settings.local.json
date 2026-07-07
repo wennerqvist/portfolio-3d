@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(update-config)",
+      "Bash(claude remote-control *)",
+      "Bash(npx *)",
+      "Skill(meta-skills:agent-browser)",
+      "Bash(npm i *)",
+      "Bash(agent-browser batch *)",
+      "Bash(agent-browser console *)",
+      "Bash(agent-browser close *)",
+      "Bash(agent-browser eval *)",
+      "Bash(agent-browser screenshot *)",
+      "PowerShell(git init *)"
+    ]
+  }
+}

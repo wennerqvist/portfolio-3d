@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — 3D Gallery</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="webgl"></canvas>
+  <div class="vignette"></div>
+  <div class="scroll-space"></div>
+
+  <header class="ui-header">
+    <div class="logo">JW<span class="accent">.</span></div>
+    <nav class="nav">
+      <a href="#">Work</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <div class="ui-hero">
+    <h1>Creative<br />Portfolio</h1>
+    <p class="subtitle">Selected projects — 2026</p>
+  </div>
+
+  <footer class="ui-footer">
+    <span class="hint">Drag or scroll to explore</span>
+    <span class="counter"><span id="active-index">01</span> / 06</span>
+  </footer>
+
+  <!-- GSAP + Lenis (UMD builds from CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+
+  <!-- Three.js (ES module from CDN) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

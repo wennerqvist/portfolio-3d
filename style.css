@@ -1,0 +1,154 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0a;
+  --fg: #f2f2f0;
+  --muted: rgba(242, 242, 240, 0.45);
+  --accent: #ff4d2e;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#webgl {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+}
+
+#webgl.dragging {
+  cursor: grabbing;
+}
+
+/* Vignette: darkened edges pull focus to the center of the dome */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 45%,
+    rgba(0, 0, 0, 0.32) 78%,
+    rgba(0, 0, 0, 0.62) 100%
+  );
+}
+
+/* Invisible track that gives Lenis real scroll distance */
+.scroll-space {
+  height: 600vh;
+  pointer-events: none;
+}
+
+body {
+  scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- UI overlay ---------- */
+
+.ui-header,
+.ui-hero,
+.ui-footer {
+  position: fixed;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ui-header {
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 2.5rem;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  pointer-events: auto;
+}
+
+.accent {
+  color: var(--accent);
+}
+
+.nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  transition: color 0.3s ease;
+  pointer-events: auto;
+}
+
+.nav a:hover {
+  color: var(--fg);
+}
+
+.ui-hero {
+  bottom: 14vh;
+  left: 2.5rem;
+}
+
+.ui-hero h1 {
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ui-footer {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.75rem 2.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.counter {
+  font-variant-numeric: tabular-nums;
+}
+
+#active-index {
+  color: var(--fg);
+}
