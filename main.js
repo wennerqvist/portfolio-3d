@@ -1,17 +1,5 @@
 import * as THREE from "three";
-
-/* ------------------------------------------------------------------ */
-/*  Project data                                                       */
-/* ------------------------------------------------------------------ */
-
-const PROJECTS = [
-  { title: "Nebula", category: "Interactive Installation", hue: 14 },
-  { title: "Drift", category: "WebGL Experience", hue: 210 },
-  { title: "Mono", category: "Brand Identity", hue: 45 },
-  { title: "Pulse", category: "Audio Visualizer", hue: 280 },
-  { title: "Terra", category: "Data Visualization", hue: 150 },
-  { title: "Echo", category: "Motion Design", hue: 340 },
-];
+import { projects as PROJECTS } from "./projects.js";
 
 const DOME_RADIUS = 8; // the wire dome around the viewer
 const CARD_DISTANCE = 6.5; // cards float on the dome's inner wall
@@ -96,7 +84,7 @@ const particles = new THREE.Points(
 world.add(particles);
 
 /* ------------------------------------------------------------------ */
-/*  Project cards (canvas-drawn textures, no external images)          */
+/*  Project cards (canvas-composited textures fed by projects.js)      */
 /* ------------------------------------------------------------------ */
 
 function roundedRectPath(ctx, x, y, w, h, r) {
@@ -109,97 +97,155 @@ function roundedRectPath(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-function createCardTexture({ title, category, hue }, index) {
+// Word-wraps text onto the canvas; the last allowed line is ellipsized.
+function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  const words = String(text).split(" ");
+  let line = "";
+  let lineCount = 0;
+  for (const word of words) {
+    const test = line ? `${line} ${word}` : word;
+    if (line && ctx.measureText(test).width > maxWidth) {
+      if (lineCount === maxLines - 1) {
+        while (line && ctx.measureText(`${line}...`).width > maxWidth) {
+          line = line.slice(0, -1);
+        }
+        ctx.fillText(`${line}...`, x, y);
+        return;
+      }
+      ctx.fillText(line, x, y);
+      line = word;
+      y += lineHeight;
+      lineCount++;
+    } else {
+      line = test;
+    }
+  }
+  if (line) ctx.fillText(line, x, y);
+}
+
+function createCardTexture(project, index) {
+  const { title, description, category } = project;
   const w = 512;
   const h = 640;
   const pad = 22; // transparent margin that holds the drop shadow
+  const hue = (project.id * 57) % 360; // stable tint while the image loads
   const ctx = Object.assign(document.createElement("canvas"), {
     width: w,
     height: h,
   }).getContext("2d");
 
-  // Card body: rounded, floating on a soft shadow
-  ctx.save();
-  ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
-  ctx.shadowBlur = 26;
-  ctx.shadowOffsetY = 10;
-  roundedRectPath(ctx, pad, pad, w - pad * 2, h - pad * 2, 26);
-  ctx.fillStyle = "#161616";
-  ctx.fill();
-  ctx.restore();
-
-  // Hairline border
-  roundedRectPath(ctx, pad, pad, w - pad * 2, h - pad * 2, 26);
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // "Image" area: duotone gradient, clipped to rounded corners
   const imgX = pad + 18;
   const imgY = pad + 18;
   const imgW = w - (pad + 18) * 2;
-  const imgH = h * 0.52;
-  ctx.save();
-  roundedRectPath(ctx, imgX, imgY, imgW, imgH, 16);
-  ctx.clip();
+  const imgH = h * 0.5;
 
-  const gradient = ctx.createLinearGradient(imgX, imgY, imgX + imgW, imgY + imgH);
-  gradient.addColorStop(0, `hsl(${hue}, 68%, 52%)`);
-  gradient.addColorStop(1, `hsl(${(hue + 40) % 360}, 55%, 15%)`);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(imgX, imgY, imgW, imgH);
+  // The whole card is drawn twice: once immediately with a gradient
+  // placeholder, and again once the project image has loaded.
+  function draw(image) {
+    ctx.clearRect(0, 0, w, h);
 
-  // Subtle grain
-  for (let i = 0; i < 900; i++) {
-    ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.05})`;
-    ctx.fillRect(imgX + Math.random() * imgW, imgY + Math.random() * imgH, 1.5, 1.5);
+    // Card body: rounded, floating on a soft shadow
+    ctx.save();
+    ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
+    ctx.shadowBlur = 26;
+    ctx.shadowOffsetY = 10;
+    roundedRectPath(ctx, pad, pad, w - pad * 2, h - pad * 2, 26);
+    ctx.fillStyle = "#161616";
+    ctx.fill();
+    ctx.restore();
+
+    // Hairline border
+    roundedRectPath(ctx, pad, pad, w - pad * 2, h - pad * 2, 26);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Image area, clipped to rounded corners
+    ctx.save();
+    roundedRectPath(ctx, imgX, imgY, imgW, imgH, 16);
+    ctx.clip();
+
+    if (image) {
+      // Cover-fit: fill the slot, cropping whatever overflows
+      const scale = Math.max(imgW / image.width, imgH / image.height);
+      const dw = image.width * scale;
+      const dh = image.height * scale;
+      ctx.drawImage(image, imgX + (imgW - dw) / 2, imgY + (imgH - dh) / 2, dw, dh);
+    } else {
+      // Duotone gradient placeholder (also the fallback if loading fails)
+      const gradient = ctx.createLinearGradient(imgX, imgY, imgX + imgW, imgY + imgH);
+      gradient.addColorStop(0, `hsl(${hue}, 68%, 52%)`);
+      gradient.addColorStop(1, `hsl(${(hue + 40) % 360}, 55%, 15%)`);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(imgX, imgY, imgW, imgH);
+
+      // Subtle grain
+      for (let i = 0; i < 900; i++) {
+        ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.05})`;
+        ctx.fillRect(imgX + Math.random() * imgW, imgY + Math.random() * imgH, 1.5, 1.5);
+      }
+    }
+
+    // Dark overlay fading up from the bottom, for meta readability
+    const overlay = ctx.createLinearGradient(0, imgY + imgH * 0.45, 0, imgY + imgH);
+    overlay.addColorStop(0, "rgba(10, 10, 10, 0)");
+    overlay.addColorStop(1, "rgba(10, 10, 10, 0.72)");
+    ctx.fillStyle = overlay;
+    ctx.fillRect(imgX, imgY, imgW, imgH);
+
+    // Meta on the image: index (top-left) and year (top-right)
+    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+    ctx.font = "500 22px 'Courier New', monospace";
+    ctx.fillText(String(index + 1).padStart(2, "0"), imgX + 18, imgY + 34);
+    const year = "2026";
+    ctx.fillText(year, imgX + imgW - 18 - ctx.measureText(year).width, imgY + 34);
+    ctx.restore();
+
+    // Title
+    const textX = pad + 20;
+    ctx.fillStyle = "#f2f2f0";
+    ctx.font = "700 52px Helvetica, Arial, sans-serif";
+    ctx.fillText(title.toUpperCase(), textX, imgY + imgH + 64);
+
+    // Description, wrapped to at most three lines
+    ctx.fillStyle = "rgba(242, 242, 240, 0.55)";
+    ctx.font = "400 21px Helvetica, Arial, sans-serif";
+    wrapText(ctx, description, textX, imgY + imgH + 100, w - textX * 2, 29, 3);
+
+    // Tag pills, phantom.land style
+    let pillX = textX;
+    const pillY = h - pad - 58;
+    category.split(" ").slice(0, 2).forEach((word) => {
+      const label = word.toUpperCase();
+      ctx.font = "500 18px 'Courier New', monospace";
+      const tw = ctx.measureText(label).width;
+      roundedRectPath(ctx, pillX, pillY, tw + 28, 34, 17);
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = "rgba(242, 242, 240, 0.6)";
+      ctx.fillText(label, pillX + 14, pillY + 23);
+      pillX += tw + 40;
+    });
   }
 
-  // Dark overlay fading up from the bottom, for meta readability
-  const overlay = ctx.createLinearGradient(0, imgY + imgH * 0.45, 0, imgY + imgH);
-  overlay.addColorStop(0, "rgba(10, 10, 10, 0)");
-  overlay.addColorStop(1, "rgba(10, 10, 10, 0.72)");
-  ctx.fillStyle = overlay;
-  ctx.fillRect(imgX, imgY, imgW, imgH);
-
-  // Meta on the image: index (top-left) and year (top-right)
-  ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-  ctx.font = "500 22px 'Courier New', monospace";
-  ctx.fillText(String(index + 1).padStart(2, "0"), imgX + 18, imgY + 34);
-  const year = "2026";
-  ctx.fillText(year, imgX + imgW - 18 - ctx.measureText(year).width, imgY + 34);
-  ctx.restore();
-
-  // Title
-  const textX = pad + 20;
-  ctx.fillStyle = "#f2f2f0";
-  ctx.font = "700 58px Helvetica, Arial, sans-serif";
-  ctx.fillText(title.toUpperCase(), textX, imgY + imgH + 78);
-
-  // Category, spaced-out caps
-  ctx.fillStyle = "rgba(242, 242, 240, 0.4)";
-  ctx.font = "400 21px Helvetica, Arial, sans-serif";
-  ctx.fillText(category.toUpperCase().split("").join(" "), textX, imgY + imgH + 116);
-
-  // Tag pills, phantom.land style
-  let pillX = textX;
-  const pillY = h - pad - 58;
-  category.split(" ").slice(0, 2).forEach((word) => {
-    const label = word.toUpperCase();
-    ctx.font = "500 18px 'Courier New', monospace";
-    const tw = ctx.measureText(label).width;
-    roundedRectPath(ctx, pillX, pillY, tw + 28, 34, 17);
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.fillStyle = "rgba(242, 242, 240, 0.6)";
-    ctx.fillText(label, pillX + 14, pillY + 23);
-    pillX += tw + 40;
-  });
+  draw(null);
 
   const texture = new THREE.CanvasTexture(ctx.canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+  // Swap the placeholder for the real project image once it arrives
+  if (project.imageUrl) {
+    const image = new Image();
+    image.crossOrigin = "anonymous"; // required for WebGL to read the pixels
+    image.onload = () => {
+      draw(image);
+      texture.needsUpdate = true;
+    };
+    image.src = project.imageUrl;
+  }
+
   return texture;
 }
 
@@ -223,6 +269,9 @@ PROJECTS.forEach((project, i) => {
   );
   card.lookAt(0, 0, 0); // face the viewer at the center
   card.userData.basePosition = card.position.clone();
+  card.userData.baseQuaternion = card.quaternion.clone();
+  card.userData.project = project;
+  card.userData.index = i;
 
   world.add(card);
   cards.push(card);
@@ -274,7 +323,7 @@ canvas.addEventListener("pointermove", (e) => {
 });
 
 function updateHover() {
-  if (dragging) return;
+  if (dragging || detailsOpen) return;
   raycaster.setFromCamera(pointerNDC, camera);
   const hit = raycaster.intersectObjects(cards)[0];
   const target = hit ? hit.object : null;
@@ -282,7 +331,155 @@ function updateHover() {
   if (hoveredCard) setHover(hoveredCard, false);
   if (target) setHover(target, true);
   hoveredCard = target;
+  canvas.style.cursor = target ? "pointer" : "grab";
 }
+
+/* ------------------------------------------------------------------ */
+/*  Project details overlay — clicking a card flies it to the center   */
+/*  of the screen, the gallery falls away, and the DOM overlay takes   */
+/*  over. "Back" plays the whole sequence in reverse.                  */
+/* ------------------------------------------------------------------ */
+
+const detailsEl = document.getElementById("details");
+const detailsImage = document.getElementById("details-image");
+const detailsTitle = document.getElementById("details-title");
+const detailsDescription = document.getElementById("details-description");
+const detailsTags = document.getElementById("details-tags");
+const detailsIndexEl = document.getElementById("details-index");
+const detailsLink = document.getElementById("details-link");
+
+let detailsOpen = false;
+let transitioning = false;
+let activeCard = null;
+
+// Resting opacities to restore when the gallery returns
+const GALLERY_OPACITY = {
+  dome: dome.material.opacity,
+  innerDome: innerDome.material.opacity,
+  particles: particles.material.opacity,
+};
+
+function populateDetails(project, index) {
+  detailsImage.src = project.imageUrl;
+  detailsImage.alt = project.title;
+  detailsTitle.textContent = project.title;
+  detailsDescription.textContent = project.description;
+  detailsIndexEl.textContent = String(index + 1).padStart(2, "0");
+
+  detailsTags.innerHTML = "";
+  project.category.split(" ").forEach((word) => {
+    const tag = document.createElement("span");
+    tag.className = "details-tag";
+    tag.textContent = word.toUpperCase();
+    detailsTags.appendChild(tag);
+  });
+
+  detailsLink.style.display = project.link ? "" : "none";
+  if (project.link) detailsLink.href = project.link;
+}
+
+function openDetails(card) {
+  if (detailsOpen || transitioning) return;
+  detailsOpen = true;
+  transitioning = true;
+  activeCard = card;
+
+  populateDetails(card.userData.project, card.userData.index);
+
+  if (hoveredCard) {
+    if (hoveredCard !== card) setHover(hoveredCard, false);
+    hoveredCard = null;
+  }
+  // Stop any hover tweens on the clicked card — their overwrite mode
+  // would otherwise kill the fly-to-center animation below.
+  gsap.killTweensOf([card.position, card.scale, card.material.color]);
+  canvas.style.cursor = "grab";
+
+  // Move the card into scene space so it can fly to the camera without
+  // being dragged along by the rotating world group.
+  scene.attach(card);
+  const startQ = card.quaternion.clone();
+  const endQ = new THREE.Quaternion(); // identity = squarely facing the camera
+  const spin = { t: 0 };
+
+  const tl = gsap.timeline({ onComplete: () => (transitioning = false) });
+
+  // The clicked card flies from the dome wall to the center of the screen
+  tl.to(card.position, { x: 0, y: 0, z: -3.4, duration: 0.9, ease: "power3.inOut" }, 0);
+  tl.to(spin, {
+    t: 1,
+    duration: 0.9,
+    ease: "power3.inOut",
+    onUpdate: () => card.quaternion.slerpQuaternions(startQ, endQ, spin.t),
+  }, 0);
+  tl.to(card.scale, { x: 1.2, y: 1.2, z: 1.2, duration: 0.9, ease: "power3.inOut" }, 0);
+
+  // The rest of the gallery falls away
+  tl.to(cards.filter((c) => c !== card).map((c) => c.material), { opacity: 0, duration: 0.5, ease: "power2.out" }, 0);
+  tl.to([dome.material, innerDome.material, particles.material], { opacity: 0, duration: 0.5 }, 0);
+  tl.to([".ui-hero", ".ui-footer"], { opacity: 0, duration: 0.45 }, 0);
+
+  // Hand off to the DOM overlay
+  tl.add(() => detailsEl.classList.add("open"), 0.5);
+  tl.fromTo(detailsEl, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0.5);
+  tl.fromTo(
+    [".details-back", ".details-media", ".details-content > *"],
+    { y: 26, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.7, stagger: 0.07, ease: "power3.out" },
+    0.62
+  );
+  tl.to(card.material, { opacity: 0, duration: 0.35 }, 0.75);
+}
+
+function closeDetails() {
+  if (!detailsOpen || transitioning || !activeCard) return;
+  transitioning = true;
+  const card = activeCard;
+
+  // Back into the world group; from here "home" is a fixed local spot
+  // on the dome wall, however far the dome has rotated meanwhile.
+  world.attach(card);
+  const startQ = card.quaternion.clone();
+  const endQ = card.userData.baseQuaternion;
+  const spin = { t: 0 };
+  const base = card.userData.basePosition;
+
+  const tl = gsap.timeline({
+    onComplete: () => {
+      transitioning = false;
+      detailsOpen = false;
+      activeCard = null;
+    },
+  });
+
+  // The overlay slips away
+  tl.to([".details-back", ".details-media", ".details-content > *"], { opacity: 0, y: 18, duration: 0.35, stagger: 0.03, ease: "power2.in" }, 0);
+  tl.to(detailsEl, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0.15);
+  tl.add(() => detailsEl.classList.remove("open"), 0.55);
+
+  // The card flies back to its spot on the dome wall
+  tl.to(card.material, { opacity: 1, duration: 0.3 }, 0.35);
+  tl.to(card.position, { x: base.x, y: base.y, z: base.z, duration: 0.9, ease: "power3.inOut" }, 0.35);
+  tl.to(spin, {
+    t: 1,
+    duration: 0.9,
+    ease: "power3.inOut",
+    onUpdate: () => card.quaternion.slerpQuaternions(startQ, endQ, spin.t),
+  }, 0.35);
+  tl.to(card.scale, { x: 1, y: 1, z: 1, duration: 0.9, ease: "power3.inOut" }, 0.35);
+
+  // And the gallery returns
+  tl.to(cards.filter((c) => c !== card).map((c) => c.material), { opacity: 1, duration: 0.5, ease: "power2.out" }, 0.55);
+  tl.to(dome.material, { opacity: GALLERY_OPACITY.dome, duration: 0.5 }, 0.55);
+  tl.to(innerDome.material, { opacity: GALLERY_OPACITY.innerDome, duration: 0.5 }, 0.55);
+  tl.to(particles.material, { opacity: GALLERY_OPACITY.particles, duration: 0.5 }, 0.55);
+  tl.to([".ui-hero", ".ui-footer"], { opacity: 1, duration: 0.45 }, 0.6);
+}
+
+document.getElementById("details-back").addEventListener("click", closeDetails);
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeDetails();
+});
 
 /* ------------------------------------------------------------------ */
 /*  Rotation: drag + Lenis scroll, eased through GSAP                  */
@@ -305,12 +502,16 @@ let dragging = false;
 let lastPointer = { x: 0, y: 0 };
 let dragVelocityY = 0; // smoothed, so a single jittery event can't spike inertia
 
+let downPointer = null; // where the pointer went down, to tell clicks from drags
+
 canvas.addEventListener("pointerdown", (e) => {
+  if (detailsOpen) return;
   dragging = true;
   canvas.classList.add("dragging");
-  canvas.setPointerCapture(e.pointerId);
   lastPointer = { x: e.clientX, y: e.clientY };
+  downPointer = { x: e.clientX, y: e.clientY };
   dragVelocityY = 0;
+  canvas.setPointerCapture(e.pointerId);
 });
 
 canvas.addEventListener("pointermove", (e) => {
@@ -341,7 +542,22 @@ const endDrag = () => {
   targetY += dragVelocityY * 14;
   rotateY(targetY);
 };
-canvas.addEventListener("pointerup", endDrag);
+canvas.addEventListener("pointerup", (e) => {
+  endDrag();
+
+  // A click (not a drag) on a card opens its details page
+  if (detailsOpen || !downPointer) return;
+  const moved = Math.hypot(e.clientX - downPointer.x, e.clientY - downPointer.y);
+  downPointer = null;
+  if (moved > 6) return;
+  pointerNDC.set(
+    (e.clientX / window.innerWidth) * 2 - 1,
+    -(e.clientY / window.innerHeight) * 2 + 1
+  );
+  raycaster.setFromCamera(pointerNDC, camera);
+  const hit = raycaster.intersectObjects(cards)[0];
+  if (hit) openDetails(hit.object);
+});
 canvas.addEventListener("pointercancel", endDrag);
 
 // --- Lenis: wheel / touch scrolling pans the view with smooth easing ---
@@ -355,6 +571,7 @@ let lastScroll = 0;
 lenis.on("scroll", ({ scroll }) => {
   const delta = scroll - lastScroll;
   lastScroll = scroll;
+  if (detailsOpen) return;
   targetY += delta * 0.0022;
   rotateY(targetY);
 });
@@ -364,6 +581,7 @@ lenis.on("scroll", ({ scroll }) => {
 /* ------------------------------------------------------------------ */
 
 const indexEl = document.getElementById("active-index");
+document.getElementById("project-total").textContent = String(PROJECTS.length).padStart(2, "0");
 const viewDirection = new THREE.Vector3(0, 0, -1); // camera looks down -Z
 const worldPos = new THREE.Vector3();
 let currentIndex = -1;
@@ -411,7 +629,7 @@ gsap.ticker.add((time, deltaTime) => {
 
   // Slow idle pan so the scene never feels static (time-based, so the
   // speed is identical at any frame rate)
-  if (!dragging) targetY += 0.00002 * deltaTime;
+  if (!dragging && !detailsOpen) targetY += 0.00002 * deltaTime;
   rotateY(targetY);
 
   world.rotation.y = rotation.y;

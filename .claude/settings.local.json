@@ -11,7 +11,12 @@
       "Bash(agent-browser close *)",
       "Bash(agent-browser eval *)",
       "Bash(agent-browser screenshot *)",
-      "PowerShell(git init *)"
+      "PowerShell(git init *)",
+      "PowerShell($line = \\(Get-Content main.js | Select-String -SimpleMatch 'toUpperCase\\(\\).split'\\).Line; $line; \\($line.ToCharArray\\(\\) | ForEach-Object { [int]$_ }\\) -join ',')",
+      "PowerShell($p='C:\\\\Users\\\\jakob\\\\OneDrive\\\\Skrivbord\\\\portfolio-3d\\\\main.js'; $t=[IO.File]::ReadAllText\\($p\\); $nl = if\\($t.Contains\\(\"`r`n\"\\)\\){\"`r`n\"}else{\"`n\"}; $lines=$t -split \"`r?`n\"; if\\($lines[143].Trim\\(\\) -ne 'function draw\\(image\\) {'\\){ throw \\('unexpected line 144: ' + $lines[143]\\) }; if\\($lines[229].Trim\\(\\) -ne '}'\\){ throw \\('unexpected line 230: ' + $lines[229]\\) }; for\\($i=144;$i -le 228;$i++\\){ if\\($lines[$i].Length -gt 0\\){ $lines[$i]='  '+$lines[$i] } }; [IO.File]::WriteAllText\\($p, \\($lines -join $nl\\), \\(New-Object System.Text.UTF8Encoding\\($false\\)\\)\\); 'reindented ok')",
+      "PowerShell(Copy-Item *)",
+      "PowerShell(npx -y serve -l 5178 .)",
+      "Bash(agent-browser find *)"
     ]
   }
 }

@@ -27,8 +27,28 @@
 
   <footer class="ui-footer">
     <span class="hint">Drag or scroll to explore</span>
-    <span class="counter"><span id="active-index">01</span> / 06</span>
+    <span class="counter"><span id="active-index">01</span> / <span id="project-total">06</span></span>
   </footer>
+
+  <!-- Project details overlay (populated from projects.js on card click) -->
+  <section class="details" id="details">
+    <button class="details-back" id="details-back" type="button">&larr; Back</button>
+    <div class="details-inner">
+      <div class="details-media">
+        <img id="details-image" alt="" />
+      </div>
+      <div class="details-content">
+        <div class="details-meta">
+          <span id="details-index">01</span>
+          <span>2026</span>
+        </div>
+        <h2 id="details-title"></h2>
+        <p id="details-description"></p>
+        <div class="details-tags" id="details-tags"></div>
+        <a class="details-link" id="details-link" target="_blank" rel="noopener">Visit project &#8599;</a>
+      </div>
+    </div>
+  </section>
 
   <!-- GSAP + Lenis (UMD builds from CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
