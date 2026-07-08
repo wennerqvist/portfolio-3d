@@ -16,7 +16,13 @@
       "PowerShell($p='C:\\\\Users\\\\jakob\\\\OneDrive\\\\Skrivbord\\\\portfolio-3d\\\\main.js'; $t=[IO.File]::ReadAllText\\($p\\); $nl = if\\($t.Contains\\(\"`r`n\"\\)\\){\"`r`n\"}else{\"`n\"}; $lines=$t -split \"`r?`n\"; if\\($lines[143].Trim\\(\\) -ne 'function draw\\(image\\) {'\\){ throw \\('unexpected line 144: ' + $lines[143]\\) }; if\\($lines[229].Trim\\(\\) -ne '}'\\){ throw \\('unexpected line 230: ' + $lines[229]\\) }; for\\($i=144;$i -le 228;$i++\\){ if\\($lines[$i].Length -gt 0\\){ $lines[$i]='  '+$lines[$i] } }; [IO.File]::WriteAllText\\($p, \\($lines -join $nl\\), \\(New-Object System.Text.UTF8Encoding\\($false\\)\\)\\); 'reindented ok')",
       "PowerShell(Copy-Item *)",
       "PowerShell(npx -y serve -l 5178 .)",
-      "Bash(agent-browser find *)"
+      "Bash(agent-browser find *)",
+      "PowerShell($conn = Get-NetTCPConnection -LocalPort 8137 -State Listen -ErrorAction SilentlyContinue; if \\($conn\\) { $conn | ForEach-Object { Get-Process -Id $_.OwningProcess | Select-Object Id, ProcessName, StartTime } })",
+      "PowerShell(Stop-Process *)",
+      "Bash(agent-browser snapshot *)",
+      "PowerShell(Rename-Item *)",
+      "Bash(agent-browser set *)",
+      "Bash(agent-browser scroll *)"
     ]
   }
 }

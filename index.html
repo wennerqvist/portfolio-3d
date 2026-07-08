@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio — 3D Gallery</title>
+  <title>Jakob Wennerqvist — Portfolio</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,11 +12,11 @@
   <div class="scroll-space"></div>
 
   <header class="ui-header">
-    <div class="logo">JW<span class="accent">.</span></div>
+    <a class="logo" href="#work" data-page="work">JW<span class="accent">.</span></a>
     <nav class="nav">
-      <a href="#">Work</a>
-      <a href="#">About</a>
-      <a href="#">Contact</a>
+      <a href="#work" data-page="work" class="active">Work</a>
+      <a href="#about" data-page="about">About</a>
+      <a href="#contact" data-page="contact">Contact</a>
     </nav>
   </header>
 
@@ -30,22 +30,122 @@
     <span class="counter"><span id="active-index">01</span> / <span id="project-total">06</span></span>
   </footer>
 
+  <!-- About page -->
+  <section class="page" id="page-about" data-lenis-prevent>
+    <div class="page-inner">
+      <button class="page-back" data-page="work" type="button">&larr; Back to gallery</button>
+      <div class="page-meta">
+        <span>02</span>
+        <span>About</span>
+      </div>
+      <h2 class="page-title">Creative<br />Developer</h2>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            I'm Jakob Wennerqvist — a creative developer based in Stockholm,
+            working where design and code overlap. I build interactive
+            experiences for the web: 3D scenes, generative visuals, and
+            interfaces that feel alive.
+          </p>
+          <p>
+            Over the past years I've worked across brand, motion and web —
+            from real-time installations shown at festivals to identity
+            systems for small studios. I care about the details: easing
+            curves, typography, and the last 10% that makes a thing feel
+            finished.
+          </p>
+          <p>
+            When I'm not shipping, I'm experimenting with shaders,
+            audio-reactive visuals, and whatever the browser lets me get
+            away with.
+          </p>
+        </div>
+        <aside class="about-aside">
+          <h3 class="aside-label">Capabilities</h3>
+          <ul class="skill-list">
+            <li>Three.js / WebGL</li>
+            <li>GSAP &amp; motion design</li>
+            <li>Creative frontend (JS / TS)</li>
+            <li>Generative &amp; audio-reactive visuals</li>
+            <li>Brand &amp; identity</li>
+            <li>UI / interaction design</li>
+          </ul>
+          <h3 class="aside-label">Currently</h3>
+          <p class="aside-note">Open for freelance &amp; collaborations — 2026</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact page -->
+  <section class="page" id="page-contact" data-lenis-prevent>
+    <div class="page-inner">
+      <button class="page-back" data-page="work" type="button">&larr; Back to gallery</button>
+      <div class="page-meta">
+        <span>03</span>
+        <span>Contact</span>
+      </div>
+      <h2 class="page-title">Let's<br />Talk</h2>
+      <p class="contact-lede">
+        Have a project in mind, a collaboration, or just want to say hi?
+        My inbox is always open.
+      </p>
+      <a class="contact-email" href="mailto:jakob.wennerqvist@gmail.com">jakob.wennerqvist@gmail.com</a>
+      <ul class="contact-links">
+        <li><a href="https://github.com/wennerqvist" target="_blank" rel="noopener">GitHub <span class="arrow">&#8599;</span></a></li>
+        <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn <span class="arrow">&#8599;</span></a></li>
+        <li><a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram <span class="arrow">&#8599;</span></a></li>
+      </ul>
+      <p class="contact-location">Stockholm, Sweden — CET</p>
+    </div>
+  </section>
+
   <!-- Project details overlay (populated from projects.js on card click) -->
   <section class="details" id="details">
     <button class="details-back" id="details-back" type="button">&larr; Back</button>
-    <div class="details-inner">
-      <div class="details-media">
-        <img id="details-image" alt="" />
-      </div>
-      <div class="details-content">
-        <div class="details-meta">
-          <span id="details-index">01</span>
-          <span>2026</span>
+    <div class="details-body">
+      <div class="details-inner">
+        <div class="details-media">
+          <img id="details-image" alt="" />
         </div>
-        <h2 id="details-title"></h2>
-        <p id="details-description"></p>
-        <div class="details-tags" id="details-tags"></div>
-        <a class="details-link" id="details-link" target="_blank" rel="noopener">Visit project &#8599;</a>
+        <div class="details-content">
+          <div class="details-meta">
+            <span id="details-index">01</span>
+            <span>2026</span>
+          </div>
+          <h2 id="details-title"></h2>
+          <p id="details-description"></p>
+          <div class="details-tags" id="details-tags"></div>
+          <a class="details-link" id="details-link" target="_blank" rel="noopener">Visit project &#8599;</a>
+        </div>
+      </div>
+
+      <!-- Optional media embeds (shown only for projects that define them) -->
+      <div class="details-extras">
+        <div class="details-extra" id="details-case-section">
+          <h3 class="extra-label">Case Study</h3>
+          <div class="case-study" id="details-case"></div>
+        </div>
+        <div class="details-extra" id="details-video-section">
+          <h3 class="extra-label">Campaign Film</h3>
+          <div class="video-embed">
+            <iframe
+              id="details-video"
+              title="Campaign film"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+        <div class="details-extra" id="details-pdf-section">
+          <div class="extra-label-row">
+            <h3 class="extra-label">Slide Deck</h3>
+            <a class="extra-open" id="details-pdf-open" target="_blank" rel="noopener">Open PDF &#8599;</a>
+          </div>
+          <div class="pdf-viewer" id="details-pdf">
+            <p class="pdf-status" id="details-pdf-status">Loading deck&hellip;</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>

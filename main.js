@@ -201,10 +201,15 @@ function createCardTexture(project, index) {
     ctx.fillText(year, imgX + imgW - 18 - ctx.measureText(year).width, imgY + 34);
     ctx.restore();
 
-    // Title
+    // Title — shrink to fit the card width for long names
     const textX = pad + 20;
     ctx.fillStyle = "#f2f2f0";
-    ctx.font = "700 52px Helvetica, Arial, sans-serif";
+    let titleSize = 52;
+    ctx.font = `700 ${titleSize}px Helvetica, Arial, sans-serif`;
+    while (titleSize > 26 && ctx.measureText(title.toUpperCase()).width > w - textX * 2) {
+      titleSize -= 2;
+      ctx.font = `700 ${titleSize}px Helvetica, Arial, sans-serif`;
+    }
     ctx.fillText(title.toUpperCase(), textX, imgY + imgH + 64);
 
     // Description, wrapped to at most three lines
@@ -323,7 +328,7 @@ canvas.addEventListener("pointermove", (e) => {
 });
 
 function updateHover() {
-  if (dragging || detailsOpen) return;
+  if (dragging || detailsOpen || currentPage !== "work") return;
   raycaster.setFromCamera(pointerNDC, camera);
   const hit = raycaster.intersectObjects(cards)[0];
   const target = hit ? hit.object : null;
@@ -347,10 +352,137 @@ const detailsDescription = document.getElementById("details-description");
 const detailsTags = document.getElementById("details-tags");
 const detailsIndexEl = document.getElementById("details-index");
 const detailsLink = document.getElementById("details-link");
+const detailsCaseSection = document.getElementById("details-case-section");
+const detailsCase = document.getElementById("details-case");
+const detailsVideoSection = document.getElementById("details-video-section");
+const detailsVideo = document.getElementById("details-video");
+const detailsPdfSection = document.getElementById("details-pdf-section");
+const detailsPdfContainer = document.getElementById("details-pdf");
+const detailsPdfStatus = document.getElementById("details-pdf-status");
+const detailsPdfOpen = document.getElementById("details-pdf-open");
+
+/* --- Case study: light markup from plain text. Blank lines separate
+       blocks; "Label:" (with optional inline text) becomes a heading,
+       "- " lines become bullets, everything else a paragraph. --- */
+
+function renderCaseStudy(text) {
+  detailsCase.innerHTML = "";
+  text.trim().split(/\n\s*\n/).forEach((block) => {
+    let lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+    if (!lines.length) return;
+
+    const heading = lines[0].match(/^([^:]+):\s*(.*)$/);
+    if (heading) {
+      const h = document.createElement("h4");
+      h.textContent = heading[1];
+      detailsCase.appendChild(h);
+      lines = heading[2] ? [heading[2], ...lines.slice(1)] : lines.slice(1);
+    }
+
+    const paragraphs = lines.filter((l) => !l.startsWith("- "));
+    if (paragraphs.length) {
+      const p = document.createElement("p");
+      p.textContent = paragraphs.join(" ");
+      detailsCase.appendChild(p);
+    }
+
+    const bullets = lines.filter((l) => l.startsWith("- "));
+    if (bullets.length) {
+      const ul = document.createElement("ul");
+      bullets.forEach((b) => {
+        const li = document.createElement("li");
+        li.textContent = b.slice(2);
+        ul.appendChild(li);
+      });
+      detailsCase.appendChild(ul);
+    }
+  });
+}
+
+/* --- Slide-deck viewer: PDF.js is loaded from CDN on first use, and
+       each page is rendered to a canvas inside a scrollable column --- */
+
+let pdfJsPromise = null;
+function loadPdfJs() {
+  if (!pdfJsPromise) {
+    pdfJsPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js";
+      script.onload = () => {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+        resolve(window.pdfjsLib);
+      };
+      script.onerror = () => {
+        pdfJsPromise = null;
+        reject(new Error("Failed to load PDF.js"));
+      };
+      document.head.appendChild(script);
+    });
+  }
+  return pdfJsPromise;
+}
+
+let renderedPdfUrl = null; // rendered canvases are kept across open/close
+let pdfRenderToken = 0; // invalidates an in-flight render when a new one starts
+
+async function renderPdf(url) {
+  if (renderedPdfUrl === url) return;
+  const token = ++pdfRenderToken;
+  renderedPdfUrl = url;
+  detailsPdfContainer.querySelectorAll("canvas").forEach((c) => c.remove());
+  detailsPdfStatus.hidden = false;
+  detailsPdfStatus.textContent = "Loading deck…";
+
+  try {
+    const pdfjs = await loadPdfJs();
+    const doc = await pdfjs.getDocument(url).promise;
+    if (token !== pdfRenderToken) return;
+
+    // The overlay may still be display:none here, so the slide width is
+    // derived from the layout constants instead of measured from the DOM
+    // (.details-body caps at 1120px, minus overlay + viewer padding).
+    const cssWidth = Math.max(320, Math.min(1120, window.innerWidth - 80) - 32);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    for (let n = 1; n <= doc.numPages; n++) {
+      const page = await doc.getPage(n);
+      if (token !== pdfRenderToken) return;
+      const viewport = page.getViewport({
+        scale: (cssWidth / page.getViewport({ scale: 1 }).width) * dpr,
+      });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      detailsPdfContainer.appendChild(canvas);
+      await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+      if (token !== pdfRenderToken) return;
+      detailsPdfStatus.hidden = true; // first page is enough to hide the loader
+    }
+  } catch (err) {
+    if (token !== pdfRenderToken) return;
+    renderedPdfUrl = null;
+    detailsPdfStatus.hidden = false;
+    detailsPdfStatus.innerHTML =
+      `Couldn't load the deck — <a href="${url}" target="_blank" rel="noopener">open the PDF directly</a>`;
+  }
+}
 
 let detailsOpen = false;
 let transitioning = false;
 let activeCard = null;
+let detailsTl = null; // live open/close timeline, killable by page navigation
+
+// The overlay gets its own Lenis instance so long case studies / decks
+// scroll with the same easing as the gallery. The window Lenis still
+// receives wheel events over the overlay, but its scroll handler
+// ignores them while the details are open.
+const detailsLenis = new Lenis({
+  wrapper: detailsEl,
+  content: detailsEl.querySelector(".details-body"),
+  lerp: 0.09,
+  smoothWheel: true,
+});
 
 // Resting opacities to restore when the gallery returns
 const GALLERY_OPACITY = {
@@ -374,8 +506,28 @@ function populateDetails(project, index) {
     detailsTags.appendChild(tag);
   });
 
-  detailsLink.style.display = project.link ? "" : "none";
+  // Hide "Visit project" when it would only duplicate the embedded video
+  const linkIsEmbedded =
+    project.link && project.youtubeId && project.link.includes(project.youtubeId);
+  detailsLink.style.display = project.link && !linkIsEmbedded ? "" : "none";
   if (project.link) detailsLink.href = project.link;
+
+  detailsLenis.scrollTo(0, { immediate: true, force: true });
+
+  // Optional long-form case study + media embeds
+  detailsCaseSection.hidden = !project.fullDescription;
+  if (project.fullDescription) renderCaseStudy(project.fullDescription);
+
+  detailsVideoSection.hidden = !project.youtubeId;
+  detailsVideo.src = project.youtubeId
+    ? `https://www.youtube-nocookie.com/embed/${project.youtubeId}?rel=0`
+    : "";
+
+  detailsPdfSection.hidden = !project.pdfUrl;
+  if (project.pdfUrl) {
+    detailsPdfOpen.href = project.pdfUrl;
+    renderPdf(project.pdfUrl);
+  }
 }
 
 function openDetails(card) {
@@ -402,7 +554,7 @@ function openDetails(card) {
   const endQ = new THREE.Quaternion(); // identity = squarely facing the camera
   const spin = { t: 0 };
 
-  const tl = gsap.timeline({ onComplete: () => (transitioning = false) });
+  const tl = (detailsTl = gsap.timeline({ onComplete: () => (transitioning = false) }));
 
   // The clicked card flies from the dome wall to the center of the screen
   tl.to(card.position, { x: 0, y: 0, z: -3.4, duration: 0.9, ease: "power3.inOut" }, 0);
@@ -419,11 +571,15 @@ function openDetails(card) {
   tl.to([dome.material, innerDome.material, particles.material], { opacity: 0, duration: 0.5 }, 0);
   tl.to([".ui-hero", ".ui-footer"], { opacity: 0, duration: 0.45 }, 0);
 
-  // Hand off to the DOM overlay
-  tl.add(() => detailsEl.classList.add("open"), 0.5);
+  // Hand off to the DOM overlay (scroll reset must happen after the
+  // overlay is display:block, or the browser drops it)
+  tl.add(() => {
+    detailsEl.classList.add("open");
+    detailsLenis.scrollTo(0, { immediate: true, force: true });
+  }, 0.5);
   tl.fromTo(detailsEl, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0.5);
   tl.fromTo(
-    [".details-back", ".details-media", ".details-content > *"],
+    [".details-back", ".details-media", ".details-content > *", ".details-extra"],
     { y: 26, opacity: 0 },
     { y: 0, opacity: 1, duration: 0.7, stagger: 0.07, ease: "power3.out" },
     0.62
@@ -444,16 +600,17 @@ function closeDetails() {
   const spin = { t: 0 };
   const base = card.userData.basePosition;
 
-  const tl = gsap.timeline({
+  const tl = (detailsTl = gsap.timeline({
     onComplete: () => {
       transitioning = false;
       detailsOpen = false;
       activeCard = null;
     },
-  });
+  }));
 
-  // The overlay slips away
-  tl.to([".details-back", ".details-media", ".details-content > *"], { opacity: 0, y: 18, duration: 0.35, stagger: 0.03, ease: "power2.in" }, 0);
+  // The overlay slips away (and the campaign film stops playing)
+  detailsVideo.src = "";
+  tl.to([".details-back", ".details-media", ".details-content > *", ".details-extra"], { opacity: 0, y: 18, duration: 0.35, stagger: 0.03, ease: "power2.in" }, 0);
   tl.to(detailsEl, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0.15);
   tl.add(() => detailsEl.classList.remove("open"), 0.55);
 
@@ -476,9 +633,14 @@ function closeDetails() {
   tl.to([".ui-hero", ".ui-footer"], { opacity: 1, duration: 0.45 }, 0.6);
 }
 
+// Debug helper: open a project's details from the console, e.g. __openProject(6)
+window.__openProject = (i) => cards[i] && openDetails(cards[i]);
+
 document.getElementById("details-back").addEventListener("click", closeDetails);
 window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeDetails();
+  if (e.key !== "Escape") return;
+  if (detailsOpen) closeDetails();
+  else if (currentPage !== "work") goToPage("work");
 });
 
 /* ------------------------------------------------------------------ */
@@ -505,7 +667,7 @@ let dragVelocityY = 0; // smoothed, so a single jittery event can't spike inerti
 let downPointer = null; // where the pointer went down, to tell clicks from drags
 
 canvas.addEventListener("pointerdown", (e) => {
-  if (detailsOpen) return;
+  if (detailsOpen || currentPage !== "work") return;
   dragging = true;
   canvas.classList.add("dragging");
   lastPointer = { x: e.clientX, y: e.clientY };
@@ -546,7 +708,7 @@ canvas.addEventListener("pointerup", (e) => {
   endDrag();
 
   // A click (not a drag) on a card opens its details page
-  if (detailsOpen || !downPointer) return;
+  if (detailsOpen || currentPage !== "work" || !downPointer) return;
   const moved = Math.hypot(e.clientX - downPointer.x, e.clientY - downPointer.y);
   downPointer = null;
   if (moved > 6) return;
@@ -571,7 +733,7 @@ let lastScroll = 0;
 lenis.on("scroll", ({ scroll }) => {
   const delta = scroll - lastScroll;
   lastScroll = scroll;
-  if (detailsOpen) return;
+  if (detailsOpen || currentPage !== "work") return;
   targetY += delta * 0.0022;
   rotateY(targetY);
 });
@@ -617,8 +779,140 @@ gsap.to(fovTween, {
     camera.updateProjectionMatrix();
   },
 });
-gsap.from(".ui-hero h1", { yPercent: 40, opacity: 0, duration: 1.2, ease: "power3.out", delay: 0.3 });
-gsap.from(".subtitle, .ui-footer, .ui-header", { opacity: 0, duration: 1, delay: 0.8 });
+// Deep-linking to #about / #contact skips the gallery UI intro — those
+// tweens would otherwise fade the hero/footer back in over the page.
+const START_PAGE = ["about", "contact"].includes(location.hash.replace("#", ""))
+  ? location.hash.replace("#", "")
+  : "work";
+
+if (START_PAGE === "work") {
+  gsap.from(".ui-hero h1", { yPercent: 40, opacity: 0, duration: 1.2, ease: "power3.out", delay: 0.3 });
+  gsap.from(".subtitle, .ui-footer, .ui-header", { opacity: 0, duration: 1, delay: 0.8 });
+} else {
+  gsap.set([".ui-hero", ".ui-footer"], { opacity: 0 });
+  gsap.from(".ui-header", { opacity: 0, duration: 1, delay: 0.3 });
+}
+
+/* ------------------------------------------------------------------ */
+/*  Page navigation — WORK (gallery) / ABOUT / CONTACT                 */
+/*  The gallery never unmounts: leaving WORK fades the cards out and   */
+/*  dims the dome, which keeps drifting behind the DOM pages.          */
+/* ------------------------------------------------------------------ */
+
+const PAGES = {
+  about: document.getElementById("page-about"),
+  contact: document.getElementById("page-contact"),
+};
+const navLinks = document.querySelectorAll("[data-page]");
+
+let currentPage = "work";
+let pageTl = null;
+
+// Dome/particle opacities while a DOM page is in front of them
+const PAGE_DIM = { dome: 0.03, innerDome: 0.012, particles: 0.12 };
+
+// If the user navigates while the project details overlay is open (or
+// mid-flight), snap everything back to rest — the page transition
+// takes over from a clean state.
+function resetDetailsInstant() {
+  if (!detailsOpen && !transitioning) return;
+  if (detailsTl) detailsTl.kill();
+  if (activeCard) {
+    world.attach(activeCard);
+    activeCard.position.copy(activeCard.userData.basePosition);
+    activeCard.quaternion.copy(activeCard.userData.baseQuaternion);
+    activeCard.scale.setScalar(1);
+  }
+  cards.forEach((c) => {
+    c.material.opacity = 1;
+    c.material.color.setScalar(0.847);
+  });
+  detailsEl.classList.remove("open");
+  gsap.set(detailsEl, { clearProps: "opacity" });
+  detailsVideo.src = "";
+  detailsOpen = false;
+  transitioning = false;
+  activeCard = null;
+}
+
+function goToPage(name) {
+  if (name === currentPage) return;
+  resetDetailsInstant();
+  if (pageTl) pageTl.kill();
+
+  const from = currentPage;
+  currentPage = name;
+  navLinks.forEach((link) => link.classList.toggle("active", link.dataset.page === name));
+  history.replaceState(null, "", `#${name}`);
+
+  // A killed mid-flight transition can leave a third page half-mounted;
+  // anything that isn't the page we're leaving gets unmounted outright.
+  Object.entries(PAGES).forEach(([key, el]) => {
+    if (key !== from) {
+      el.classList.remove("open");
+      gsap.set(el, { clearProps: "opacity" });
+    }
+  });
+
+  if (hoveredCard) {
+    setHover(hoveredCard, false);
+    hoveredCard = null;
+    canvas.style.cursor = "grab";
+  }
+
+  const tl = (pageTl = gsap.timeline());
+
+  // -- Outgoing --
+  if (from === "work") {
+    tl.to(cards.map((c) => c.material), { opacity: 0, duration: 0.45, ease: "power2.out" }, 0);
+    tl.to(dome.material, { opacity: PAGE_DIM.dome, duration: 0.6 }, 0);
+    tl.to(innerDome.material, { opacity: PAGE_DIM.innerDome, duration: 0.6 }, 0);
+    tl.to(particles.material, { opacity: PAGE_DIM.particles, duration: 0.6 }, 0);
+    tl.to([".ui-hero", ".ui-footer"], { opacity: 0, duration: 0.4, ease: "power2.out" }, 0);
+  } else {
+    const el = PAGES[from];
+    tl.to(el.querySelectorAll(".page-inner > *"), { y: -18, opacity: 0, duration: 0.3, stagger: 0.03, ease: "power2.in" }, 0);
+    tl.to(el, { opacity: 0, duration: 0.3, ease: "power2.in" }, 0.12);
+    tl.add(() => el.classList.remove("open"), 0.45);
+  }
+
+  // -- Incoming --
+  if (name === "work") {
+    tl.to(cards.map((c) => c.material), { opacity: 1, duration: 0.6, ease: "power2.out" }, 0.4);
+    tl.to(dome.material, { opacity: GALLERY_OPACITY.dome, duration: 0.6 }, 0.4);
+    tl.to(innerDome.material, { opacity: GALLERY_OPACITY.innerDome, duration: 0.6 }, 0.4);
+    tl.to(particles.material, { opacity: GALLERY_OPACITY.particles, duration: 0.6 }, 0.4);
+    tl.to([".ui-hero", ".ui-footer"], { opacity: 1, duration: 0.5, ease: "power2.out" }, 0.5);
+  } else {
+    const el = PAGES[name];
+    const start = from === "work" ? 0.3 : 0.45;
+    tl.add(() => el.classList.add("open"), start);
+    tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, start);
+    tl.fromTo(
+      el.querySelectorAll(".page-inner > *"),
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, stagger: 0.08, ease: "power3.out" },
+      start + 0.1
+    );
+  }
+}
+
+navLinks.forEach((link) => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    goToPage(link.dataset.page);
+  });
+});
+
+// Deep link: opening the site at #about or #contact lands on that page
+if (START_PAGE !== "work") goToPage(START_PAGE);
+
+// Hash-only navigation (browser back/forward, or typing a hash) also
+// switches pages; goToPage no-ops when already there.
+window.addEventListener("hashchange", () => {
+  const target = location.hash.replace("#", "");
+  goToPage(target in PAGES ? target : "work");
+});
 
 /* ------------------------------------------------------------------ */
 /*  Render loop (GSAP ticker drives Lenis + Three)                     */
@@ -626,6 +920,7 @@ gsap.from(".subtitle, .ui-footer, .ui-header", { opacity: 0, duration: 1, delay:
 
 gsap.ticker.add((time, deltaTime) => {
   lenis.raf(time * 1000);
+  detailsLenis.raf(time * 1000);
 
   // Slow idle pan so the scene never feels static (time-based, so the
   // speed is identical at any frame rate)

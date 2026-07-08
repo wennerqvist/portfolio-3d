@@ -14,6 +14,14 @@
 /*    link        optional — where to view the project (null = none;   */
 /*                shown as a "Visit project" button on the details     */
 /*                page that opens when the card is clicked)            */
+/*    youtubeId   optional — YouTube video id; embeds a player on the  */
+/*                details page                                         */
+/*    pdfUrl      optional — path to a PDF; embeds a scrollable        */
+/*                slide-deck viewer on the details page                */
+/*    fullDescription                                                  */
+/*                optional — long-form case study shown on the details */
+/*                page. Lines ending in ":" (or "Label: text") become  */
+/*                headings, lines starting with "- " become bullets.   */
 /* ------------------------------------------------------------------ */
 
 export const projects = [
@@ -70,5 +78,35 @@ export const projects = [
     category: "Motion Design",
     imageUrl: "https://picsum.photos/seed/echo-motion/800/600",
     link: null,
+  },
+  {
+    id: 7,
+    title: "Ørsted Advertising Campaign",
+    description:
+      "Repositioned renewable energy company Ørsted from targeting environmentally-conscious consumers to positioning as the energy solution for scaling AI and cloud computing companies. Campaign emphasized the codependency between nature and human development through OOH ads and digital videos in tech hubs like San Francisco and Seattle.",
+    category: "Advertising Campaign",
+    imageUrl: "public/assets/orsted-campaign.png",
+    link: "https://youtu.be/5riIfXXbBmI?si=dW-0v9kB2_y0wnj1",
+    youtubeId: "5riIfXXbBmI",
+    pdfUrl: "public/assets/Orsted_Advertising_Campaign.pdf",
+    fullDescription: `Context: Final group project in Advanced Communication Management class in my MBA at Rome City Institute.
+
+Task: Reposition the renewable energy company Ørsted by creating an advertising campaign.
+
+Current Ørsted Positioning:
+- Broad positioning: Renewable energy leader committed to sustainability with focus on wind and solar energy
+- Advertising target audience: Environmentally conscious consumers
+
+Solution:
+- Illustrate that renewable energy is the only sustainable way to expand energy consumption and the only way to bring humanity forward
+- Repositioned Ørsted as the top-of-mind choice for AI and cloud computing companies
+
+Target Audience:
+- AI and cloud companies scaling up energy consumption
+- Reach both lower-level tech employees and high-level management to drive bottom-up and top-down industry influence
+
+Strategy:
+- OOH ads and events in tech cities like San Francisco and Seattle to influence industry mindset towards sustainability
+- Digital campaign with video ads on YouTube, X, and GitHub to reach tech workers`,
   },
 ];
