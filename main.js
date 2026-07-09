@@ -201,21 +201,33 @@ function createCardTexture(project, index) {
     ctx.fillText(year, imgX + imgW - 18 - ctx.measureText(year).width, imgY + 34);
     ctx.restore();
 
-    // Title — shrink to fit the card width for long names
+    // Title — shrink to fit the card width; names still too long at the
+    // minimum size wrap onto a second line (and trade one description line)
     const textX = pad + 20;
+    const titleMaxW = w - textX * 2;
     ctx.fillStyle = "#f2f2f0";
     let titleSize = 52;
     ctx.font = `700 ${titleSize}px Helvetica, Arial, sans-serif`;
-    while (titleSize > 26 && ctx.measureText(title.toUpperCase()).width > w - textX * 2) {
+    while (titleSize > 34 && ctx.measureText(title.toUpperCase()).width > titleMaxW) {
       titleSize -= 2;
       ctx.font = `700 ${titleSize}px Helvetica, Arial, sans-serif`;
     }
-    ctx.fillText(title.toUpperCase(), textX, imgY + imgH + 64);
+
+    let descY = imgY + imgH + 100;
+    let descMaxLines = 3;
+    if (ctx.measureText(title.toUpperCase()).width > titleMaxW) {
+      ctx.font = "700 30px Helvetica, Arial, sans-serif";
+      wrapText(ctx, title.toUpperCase(), textX, imgY + imgH + 56, titleMaxW, 36, 2);
+      descY = imgY + imgH + 126;
+      descMaxLines = 2;
+    } else {
+      ctx.fillText(title.toUpperCase(), textX, imgY + imgH + 64);
+    }
 
     // Description, wrapped to at most three lines
     ctx.fillStyle = "rgba(242, 242, 240, 0.55)";
     ctx.font = "400 21px Helvetica, Arial, sans-serif";
-    wrapText(ctx, description, textX, imgY + imgH + 100, w - textX * 2, 29, 3);
+    wrapText(ctx, description, textX, descY, w - textX * 2, 29, descMaxLines);
 
     // Tag pills, phantom.land style
     let pillX = textX;
@@ -351,6 +363,7 @@ const detailsTitle = document.getElementById("details-title");
 const detailsDescription = document.getElementById("details-description");
 const detailsTags = document.getElementById("details-tags");
 const detailsIndexEl = document.getElementById("details-index");
+const detailsAward = document.getElementById("details-award");
 const detailsLink = document.getElementById("details-link");
 const detailsCaseSection = document.getElementById("details-case-section");
 const detailsCase = document.getElementById("details-case");
@@ -498,8 +511,11 @@ function populateDetails(project, index) {
   detailsDescription.textContent = project.description;
   detailsIndexEl.textContent = String(index + 1).padStart(2, "0");
 
+  detailsAward.hidden = !project.award;
+  detailsAward.textContent = project.award ? `★ ${project.award}` : "";
+
   detailsTags.innerHTML = "";
-  project.category.split(" ").forEach((word) => {
+  project.category.split(" ").filter((word) => word !== "&").forEach((word) => {
     const tag = document.createElement("span");
     tag.className = "details-tag";
     tag.textContent = word.toUpperCase();
