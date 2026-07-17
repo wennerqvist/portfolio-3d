@@ -160,4 +160,50 @@ Built with Claude Code: The site was built while learning Claude Code, and it de
 
 Shipping It: The entire project is version-controlled with GitHub and deployed on Netlify with a custom domain, showcasing both technical execution and deployment workflow.`,
   },
+  {
+    id: 10,
+    title: "WorldLangAmerica Website Redesign",
+    description:
+      "Led a remote team of 5 to completely redesign a nonprofit's website in a single day. The results after 2 weeks: +261% page views, +100% checkouts, and +480% revenue per visit.",
+    category: "Website Redesign & Team Leadership",
+    imageUrl: "public/assets/wla-redesign.png",
+    link: null,
+    pdfUrl: "public/assets/WLA-Website-Evolution.pdf",
+    kpiLabel: "Results after 2 weeks",
+    kpis: [
+      { value: "+261%", label: "Page views" },
+      { value: "+11%", label: "Time on page" },
+      { value: "-12%", label: "Bounce rate" },
+      { value: "-20%", label: "Exit rate" },
+      { value: "+67%", label: "Product page visit rate" },
+      { value: "+100%", label: "Checkouts" },
+      { value: "+480%", label: "Revenue per visit" },
+      { value: "+7550%", label: "Button clicks" },
+    ],
+    fullDescription: `Context: As Deputy Director of Marketing at WorldLangAmerica, I lead a marketing team of 5 people focused on website and social media marketing. WorldLangAmerica is a nonprofit committed to providing virtual language exchanges, connecting students from different parts of the world to learn to speak each other's native language.
+
+The Problem:
+- The website looked unprofessional
+- Unclear landing page with no defined path to lead visitors down
+- Pricing was confusing
+- No effective way to qualify visitors based on variables such as language and type of customer
+
+The Managerial Challenge:
+- Interns had no prior web design experience
+- Interns work fully remote and part-time across 3 different time zones
+- Changes were slow and collaboration was difficult
+
+The Solution:
+- An effective website that leads the visitor down the customer journey
+- Lets the visitor self-qualify through a multiple-step journey
+- Minimizes friction by lowering the sense of commitment
+- Well-defined pricing that gives recommendations based on needs, making it easy for the visitor to commit
+
+The Managerial Solution:
+- Created and clearly communicated a plan to the interns for what exact changes needed to be implemented
+- Conducted a sprint where the whole team came together for 8 hours over Zoom and implemented the changes
+- Delegated and assisted while designing the complex pages during the downtime
+
+The Outcome: Completely redesigned the website in one day. Only minor details needed adjusting after the sprint.`,
+  },
 ];

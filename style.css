@@ -249,6 +249,39 @@ body::-webkit-scrollbar {
 
 /* --- About --- */
 
+.about-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  margin-top: 1.2rem;
+}
+
+.about-header .page-title {
+  margin-top: 0;
+}
+
+.about-photo {
+  width: clamp(180px, 24vw, 240px);
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5);
+}
+
+.about-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  /* Source photo is full-body; zoom in for a head-and-shoulders crop */
+  transform: scale(1.75);
+  transform-origin: 50% 28%;
+}
+
 .about-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
@@ -357,6 +390,7 @@ body::-webkit-scrollbar {
 }
 
 .contact-email {
+  position: relative;
   display: inline-block;
   margin-top: 2rem;
   color: var(--fg);
@@ -366,11 +400,49 @@ body::-webkit-scrollbar {
   letter-spacing: -0.02em;
   border-bottom: 2px solid var(--accent);
   padding-bottom: 0.3rem;
+  cursor: copy;
   transition: color 0.3s ease;
 }
 
 .contact-email:hover {
   color: var(--accent);
+}
+
+.contact-email::after {
+  content: "click to copy";
+  position: absolute;
+  left: 100%;
+  bottom: 0.55rem;
+  margin-left: 1rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.contact-email:hover::after {
+  opacity: 1;
+}
+
+.copy-note {
+  display: block;
+  margin-top: 1rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.copy-note.show {
+  opacity: 1;
 }
 
 .contact-links {
@@ -401,6 +473,21 @@ body::-webkit-scrollbar {
   color: var(--bg);
 }
 
+/* LinkedIn is the button I actually want people to press */
+.contact-links a.primary {
+  padding: 0.8rem 1.8rem;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.contact-links a.primary:hover {
+  background: #ff6a4e;
+  border-color: #ff6a4e;
+  color: var(--bg);
+}
+
 .contact-location {
   margin-top: 3rem;
   font-family: "Courier New", monospace;
@@ -410,14 +497,261 @@ body::-webkit-scrollbar {
   color: var(--muted);
 }
 
+/* ---------- Chess easter egg ---------- */
+
+/* Letters of the animated contact heading */
+.title-letter {
+  display: inline-block;
+}
+
+/* The knight: sits just left of the project counter on the gallery,
+   above the inner pages (z 8) but under the details overlay (z 20) */
+.chess-egg {
+  position: fixed;
+  z-index: 9;
+  right: 6.8rem;
+  bottom: 1.15rem;
+  padding: 0.5rem 0.6rem;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.chess-egg:hover {
+  color: var(--fg);
+  transform: scale(1.25);
+  text-shadow: 0 0 14px rgba(255, 77, 46, 0.8);
+}
+
+.chess-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(10, 10, 10, 0.82);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.chess-modal.open {
+  display: flex;
+  animation: chessFadeIn 0.25s ease;
+}
+
+@keyframes chessFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.chess-panel {
+  position: relative;
+  width: min(100%, 400px);
+  padding: 1.8rem;
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.chess-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.chess-close:hover {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+.chess-meta {
+  display: flex;
+  gap: 1.2rem;
+  padding-right: 2.5rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chess-meta span:first-child {
+  color: var(--accent);
+}
+
+.chess-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  aspect-ratio: 1;
+  margin-top: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.chess-board.shake {
+  animation: chessShake 0.4s ease;
+}
+
+@keyframes chessShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+
+.chess-sq {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  font-size: clamp(1.1rem, 5.5vw, 1.7rem);
+  line-height: 1;
+  cursor: default;
+  user-select: none;
+}
+
+.chess-sq.light { background: #33333a; }
+.chess-sq.dark { background: #1b1b20; }
+
+.chess-sq.white-piece { color: #f2f2f0; }
+.chess-sq.black-piece {
+  color: #0c0c0e;
+  text-shadow: 0 0 2px rgba(242, 242, 240, 0.65);
+}
+
+.chess-sq.selectable {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.chess-sq.selectable:hover {
+  background: rgba(255, 77, 46, 0.35);
+}
+
+.chess-sq.selected {
+  background: rgba(255, 77, 46, 0.55);
+}
+
+.chess-sq.glow {
+  animation: chessGlow 0.8s ease 2;
+}
+
+@keyframes chessGlow {
+  50% { background: rgba(255, 77, 46, 0.55); }
+}
+
+.chess-sq.mated {
+  animation: chessGlow 0.6s ease 3;
+}
+
+.chess-status {
+  margin-top: 1.1rem;
+  min-height: 2.2em;
+  font-family: "Courier New", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chess-hint {
+  padding: 0.45rem 1.1rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.chess-hint:hover {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+.chess-panel.solved .chess-status,
+.chess-panel.solved .chess-hint {
+  display: none;
+}
+
+.chess-win {
+  margin-top: 1.2rem;
+}
+
+.chess-win p {
+  color: var(--fg);
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.chess-cta {
+  display: inline-block;
+  margin-top: 1.1rem;
+  padding: 0.7rem 1.5rem;
+  background: var(--accent);
+  border-radius: 999px;
+  color: var(--bg);
+  text-decoration: none;
+  font-family: "Courier New", monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: background 0.3s ease;
+}
+
+.chess-cta:hover {
+  background: #ff6a4e;
+}
+
 @media (max-width: 860px) {
   .page {
     padding: 7.5rem 1.5rem 3rem;
   }
 
+  .contact-email::after {
+    display: none;
+  }
+
   .about-grid {
     grid-template-columns: 1fr;
     gap: 2.5rem;
+  }
+
+  .about-header {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 2rem;
+  }
+
+  .about-photo {
+    margin: 0 auto;
   }
 }
 
@@ -525,6 +859,11 @@ body::-webkit-scrollbar {
   line-height: 0.95;
   letter-spacing: -0.03em;
   text-transform: uppercase;
+}
+
+.details-content h2.long-title {
+  font-size: clamp(1.8rem, 2.8vw, 2.7rem);
+  overflow-wrap: break-word;
 }
 
 .details-content p {
@@ -657,6 +996,38 @@ body::-webkit-scrollbar {
   color: var(--accent);
 }
 
+.kpi-grid {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.5rem 1.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.kpi-value {
+  font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #4ade80;
+}
+
+.kpi-label {
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .video-embed {
   margin-top: 1.2rem;
   aspect-ratio: 16 / 9;
@@ -722,5 +1093,9 @@ body::-webkit-scrollbar {
   .details-extras {
     margin-top: 3rem;
     gap: 2.5rem;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

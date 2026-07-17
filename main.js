@@ -367,6 +367,9 @@ const detailsAward = document.getElementById("details-award");
 const detailsLink = document.getElementById("details-link");
 const detailsCaseSection = document.getElementById("details-case-section");
 const detailsCase = document.getElementById("details-case");
+const detailsKpiSection = document.getElementById("details-kpi-section");
+const detailsKpiLabel = document.getElementById("details-kpi-label");
+const detailsKpis = document.getElementById("details-kpis");
 const detailsVideoSection = document.getElementById("details-video-section");
 const detailsVideo = document.getElementById("details-video");
 const detailsPdfSection = document.getElementById("details-pdf-section");
@@ -508,6 +511,10 @@ function populateDetails(project, index) {
   detailsImage.src = project.imageUrl;
   detailsImage.alt = project.title;
   detailsTitle.textContent = project.title;
+  // Single very long words (e.g. "WorldLangAmerica") can't wrap and would
+  // overflow the column at the default title size
+  const longestWord = Math.max(...project.title.split(/\s+/).map((w) => w.length));
+  detailsTitle.classList.toggle("long-title", longestWord > 12);
   detailsDescription.textContent = project.description;
   detailsIndexEl.textContent = String(index + 1).padStart(2, "0");
 
@@ -533,6 +540,25 @@ function populateDetails(project, index) {
   // Optional long-form case study + media embeds
   detailsCaseSection.hidden = !project.fullDescription;
   if (project.fullDescription) renderCaseStudy(project.fullDescription);
+
+  const hasKpis = Boolean(project.kpis && project.kpis.length);
+  detailsKpiSection.hidden = !hasKpis;
+  if (hasKpis) {
+    detailsKpiLabel.textContent = project.kpiLabel || "Results";
+    detailsKpis.innerHTML = "";
+    project.kpis.forEach(({ value, label }) => {
+      const card = document.createElement("div");
+      card.className = "kpi-card";
+      const v = document.createElement("span");
+      v.className = "kpi-value";
+      v.textContent = value;
+      const l = document.createElement("span");
+      l.className = "kpi-label";
+      l.textContent = label;
+      card.append(v, l);
+      detailsKpis.appendChild(card);
+    });
+  }
 
   detailsVideoSection.hidden = !project.youtubeId;
   detailsVideo.src = project.youtubeId
@@ -810,6 +836,77 @@ if (START_PAGE === "work") {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Contact page extras — click-to-copy email, live clock, and the     */
+/*  letter-split heading that goToPage animates in                     */
+/* ------------------------------------------------------------------ */
+
+const contactEmail = document.getElementById("contact-email");
+const copyNote = document.getElementById("copy-note");
+let copyNoteTimer = null;
+
+contactEmail.addEventListener("click", (e) => {
+  e.preventDefault(); // copy instead of launching a mail client
+  const address = contactEmail.textContent.trim();
+  const acknowledge = () => {
+    copyNote.classList.add("show");
+    clearTimeout(copyNoteTimer);
+    copyNoteTimer = setTimeout(() => copyNote.classList.remove("show"), 2000);
+  };
+  const copyViaTextarea = () => {
+    const ta = document.createElement("textarea");
+    ta.value = address;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(address).catch(copyViaTextarea).then(acknowledge);
+  } else {
+    copyViaTextarea();
+    acknowledge();
+  }
+});
+
+const contactClock = document.getElementById("contact-clock");
+const clockFormat = new Intl.DateTimeFormat("en-GB", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+  timeZone: "Europe/Stockholm",
+});
+
+function updateContactClock() {
+  const time = clockFormat.format(new Date());
+  const hour = Number(time.split(":")[0]);
+  const late = hour >= 22 || hour < 7;
+  contactClock.textContent =
+    `Gothenburg, Sweden — ${time} CET` + (late ? " (so I might reply tomorrow)" : "");
+}
+updateContactClock();
+setInterval(updateContactClock, 60_000);
+
+// Wrap each letter of "Let's Talk" in a span so the heading can stagger
+// in; the <br> between the words is left untouched.
+document.querySelectorAll("#page-contact .page-title").forEach((title) => {
+  [...title.childNodes].forEach((node) => {
+    if (node.nodeType !== Node.TEXT_NODE) return;
+    const frag = document.createDocumentFragment();
+    for (const ch of node.textContent) {
+      if (!ch.trim()) {
+        frag.append(ch);
+        continue;
+      }
+      const span = document.createElement("span");
+      span.className = "title-letter";
+      span.textContent = ch;
+      frag.append(span);
+    }
+    node.replaceWith(frag);
+  });
+});
+
+/* ------------------------------------------------------------------ */
 /*  Page navigation — WORK (gallery) / ABOUT / CONTACT                 */
 /*  The gallery never unmounts: leaving WORK fades the cards out and   */
 /*  dims the dome, which keeps drifting behind the DOM pages.          */
@@ -910,6 +1007,14 @@ function goToPage(name) {
       { y: 0, opacity: 1, duration: 0.8, stagger: 0.08, ease: "power3.out" },
       start + 0.1
     );
+    if (name === "contact") {
+      tl.fromTo(
+        "#page-contact .title-letter",
+        { y: "0.6em", opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.55, stagger: 0.05, ease: "power3.out" },
+        start + 0.15
+      );
+    }
   }
 }
 
@@ -965,3 +1070,147 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
+
+/* ------------------------------------------------------------------ */
+/*  Chess easter egg — a knight in the corner opens a mate-in-one.     */
+/*  Ladder mate: the b7 rook seals the 7th rank, so Ra1–a8 is mate.    */
+/* ------------------------------------------------------------------ */
+
+const chessEgg = document.getElementById("chess-egg");
+const chessModal = document.getElementById("chess-modal");
+const chessPanel = document.getElementById("chess-panel");
+const chessBoardEl = document.getElementById("chess-board");
+const chessStatus = document.getElementById("chess-status");
+const chessHintBtn = document.getElementById("chess-hint");
+const chessWin = document.getElementById("chess-win");
+const chessCloseBtn = document.getElementById("chess-close");
+
+const CHESS_START = { a1: "wR", b7: "wR", g1: "wK", g8: "bK" };
+const CHESS_WINNING = { from: "a1", to: "a8" };
+const CHESS_GLYPHS = { R: "♜", K: "♚" };
+const CHESS_FILES = "abcdefgh";
+const CHESS_DEFAULT_STATUS = "Click a white piece, then a square.";
+
+let chessPosition = {};
+let chessSelected = null;
+let chessSolved = false;
+
+function renderChessBoard() {
+  chessBoardEl.innerHTML = "";
+  for (let rank = 8; rank >= 1; rank--) {
+    for (let f = 0; f < 8; f++) {
+      const sq = CHESS_FILES[f] + rank;
+      const cell = document.createElement("button");
+      cell.type = "button";
+      // a1 is a dark square: dark when file + rank is even (1-based file)
+      cell.className = "chess-sq " + ((f + 1 + rank) % 2 === 0 ? "dark" : "light");
+      cell.dataset.sq = sq;
+      const piece = chessPosition[sq];
+      if (piece) {
+        cell.textContent = CHESS_GLYPHS[piece[1]];
+        cell.classList.add(piece[0] === "w" ? "white-piece" : "black-piece");
+        if (piece[0] === "w" && !chessSolved) cell.classList.add("selectable");
+      }
+      if (sq === chessSelected) cell.classList.add("selected");
+      cell.addEventListener("click", () => onChessSquare(sq));
+      chessBoardEl.appendChild(cell);
+    }
+  }
+}
+
+function onChessSquare(sq) {
+  if (chessSolved) return;
+  const piece = chessPosition[sq];
+
+  if (piece && piece[0] === "w") {
+    chessSelected = chessSelected === sq ? null : sq;
+    chessStatus.textContent = chessSelected
+      ? `${piece[1] === "R" ? "Rook" : "King"} on ${sq} — now pick its square.`
+      : CHESS_DEFAULT_STATUS;
+    renderChessBoard();
+    return;
+  }
+
+  if (!chessSelected) {
+    chessStatus.textContent = "Pick up a white piece first.";
+    return;
+  }
+
+  if (chessSelected === CHESS_WINNING.from && sq === CHESS_WINNING.to) {
+    chessCheckmate();
+  } else {
+    chessWrongMove();
+  }
+}
+
+function chessWrongMove() {
+  chessSelected = null;
+  renderChessBoard();
+  chessStatus.textContent = "Not quite — the king slips away. Try again.";
+  chessBoardEl.classList.remove("shake");
+  void chessBoardEl.offsetWidth; // restart the animation
+  chessBoardEl.classList.add("shake");
+  setTimeout(() => chessBoardEl.classList.remove("shake"), 450);
+}
+
+function chessCheckmate() {
+  chessSolved = true;
+  chessSelected = null;
+  delete chessPosition[CHESS_WINNING.from];
+  chessPosition[CHESS_WINNING.to] = "wR";
+  renderChessBoard();
+  chessBoardEl.querySelector('[data-sq="g8"]').classList.add("mated");
+  chessPanel.classList.add("solved");
+  chessWin.hidden = false;
+  gsap.fromTo(
+    chessBoardEl,
+    { scale: 1 },
+    { scale: 1.03, duration: 0.16, yoyo: true, repeat: 1, ease: "power2.inOut" }
+  );
+  gsap.fromTo(
+    chessWin,
+    { y: 14, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.5, delay: 0.3, ease: "power3.out" }
+  );
+}
+
+function resetChess() {
+  chessPosition = { ...CHESS_START };
+  chessSelected = null;
+  chessSolved = false;
+  chessPanel.classList.remove("solved");
+  chessWin.hidden = true;
+  chessStatus.textContent = CHESS_DEFAULT_STATUS;
+  renderChessBoard();
+}
+
+function closeChess() {
+  chessModal.classList.remove("open");
+}
+
+let chessOpenedAt = 0;
+chessEgg.addEventListener("click", () => {
+  resetChess();
+  chessModal.classList.add("open");
+  chessOpenedAt = performance.now();
+});
+chessCloseBtn.addEventListener("click", closeChess);
+chessModal.addEventListener("click", (e) => {
+  // The grace period swallows the tail of the opening click landing on
+  // the backdrop that appeared under the cursor mid-gesture
+  if (e.target === chessModal && performance.now() - chessOpenedAt > 300) closeChess();
+});
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && chessModal.classList.contains("open")) closeChess();
+});
+
+chessHintBtn.addEventListener("click", () => {
+  chessStatus.textContent = "That a1 rook has a clear road north. All the way.";
+  const cell = chessBoardEl.querySelector('[data-sq="a1"]');
+  if (cell) cell.classList.add("glow");
+  setTimeout(() => cell && cell.classList.remove("glow"), 1700);
+});
+
+// The CTA carries data-page="contact", so the nav handler above already
+// routes it — this listener only dismisses the modal on the way out.
+chessWin.querySelector(".chess-cta").addEventListener("click", closeChess);

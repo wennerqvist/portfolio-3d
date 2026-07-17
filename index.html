@@ -38,7 +38,12 @@
         <span>02</span>
         <span>About</span>
       </div>
-      <h2 class="page-title">Hej,<br />I'm Jakob</h2>
+      <div class="about-header">
+        <h2 class="page-title">Hej,<br />I'm Jakob</h2>
+        <div class="about-photo">
+          <img src="public/assets/jakob-profile.jpeg" alt="Portrait of Jakob Wennerqvist" />
+        </div>
+      </div>
       <div class="about-grid">
         <div class="about-text">
           <p class="about-lede">
@@ -106,15 +111,19 @@
       </div>
       <h2 class="page-title">Let's<br />Talk</h2>
       <p class="contact-lede">
-        Have a project in mind, a collaboration, or just want to say hi?
-        My inbox is always open.
+        Whether you're hiring, brainstorming, or just curious about who's
+        behind this spinning sphere, I'd love to hear from you. Bonus
+        points if you open with something goofy.
       </p>
-      <a class="contact-email" href="mailto:jakob.wennerqvist@gmail.com">jakob.wennerqvist@gmail.com</a>
+      <div class="contact-email-block">
+        <a class="contact-email" id="contact-email" href="mailto:jakob.wennerqvist@gmail.com">jakob.wennerqvist@gmail.com</a>
+        <span class="copy-note" id="copy-note" role="status">Copied! Now don't be a stranger.</span>
+      </div>
       <ul class="contact-links">
+        <li><a class="primary" href="https://www.linkedin.com/in/jakob-wennerqvist" target="_blank" rel="noopener">LinkedIn <span class="arrow">&#8599;</span></a></li>
         <li><a href="https://github.com/wennerqvist" target="_blank" rel="noopener">GitHub <span class="arrow">&#8599;</span></a></li>
-        <li><a href="https://www.linkedin.com/in/jakob-wennerqvist" target="_blank" rel="noopener">LinkedIn <span class="arrow">&#8599;</span></a></li>
       </ul>
-      <p class="contact-location">Gothenburg, Sweden — CET</p>
+      <p class="contact-location" id="contact-clock">Gothenburg, Sweden &mdash; CET</p>
     </div>
   </section>
 
@@ -145,6 +154,10 @@
           <h3 class="extra-label">Case Study</h3>
           <div class="case-study" id="details-case"></div>
         </div>
+        <div class="details-extra" id="details-kpi-section">
+          <h3 class="extra-label" id="details-kpi-label">Results</h3>
+          <div class="kpi-grid" id="details-kpis"></div>
+        </div>
         <div class="details-extra" id="details-video-section">
           <h3 class="extra-label">Campaign Film</h3>
           <div class="video-embed">
@@ -168,6 +181,26 @@
       </div>
     </div>
   </section>
+
+  <!-- Chess easter egg: a knight in the corner opens a mate-in-one puzzle -->
+  <button class="chess-egg" id="chess-egg" type="button" aria-label="Psst — fancy a quick chess puzzle?">&#9822;</button>
+
+  <div class="chess-modal" id="chess-modal" role="dialog" aria-modal="true" aria-label="Chess puzzle">
+    <div class="chess-panel" id="chess-panel">
+      <button class="chess-close" id="chess-close" type="button" aria-label="Close puzzle">&times;</button>
+      <div class="chess-meta">
+        <span>Bonus level</span>
+        <span>White to move &mdash; mate in one</span>
+      </div>
+      <div class="chess-board" id="chess-board"></div>
+      <p class="chess-status" id="chess-status">Click a white piece, then a square.</p>
+      <button class="chess-hint" id="chess-hint" type="button">Need a hint?</button>
+      <div class="chess-win" id="chess-win" hidden>
+        <p>Checkmate! Now you definitely have to message me.</p>
+        <a class="chess-cta" href="#contact" data-page="contact">Go say hi <span class="arrow">&#8599;</span></a>
+      </div>
+    </div>
+  </div>
 
   <!-- GSAP + Lenis (UMD builds from CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
