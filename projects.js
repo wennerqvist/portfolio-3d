@@ -24,6 +24,20 @@
 /*                optional — long-form case study shown on the details */
 /*                page. Lines ending in ":" (or "Label: text") become  */
 /*                headings, lines starting with "- " become bullets.   */
+/*    caseLabel   optional — heading for the fullDescription section   */
+/*                (default "Case Study")                               */
+/*    linkLabel   optional — custom text for the link button (default  */
+/*                "Visit project"); also styles it as a filled CTA     */
+/*    publisherLogo / publisherName                                    */
+/*                optional — small publisher mark shown under the      */
+/*                description on the details page                      */
+/*    gallery     optional — labeled image groups shown as a grid on   */
+/*                the details page:                                    */
+/*                [{ label, images: ["url", ...] }, ...]               */
+/*    reviews     optional — quote cards on the details page:          */
+/*                [{ stars, quote, author }, ...] (stars 1-5)          */
+/*    reviewsLink optional — "Read more reviews" link shown under the  */
+/*                review cards                                         */
 /* ------------------------------------------------------------------ */
 
 export const projects = [
@@ -205,5 +219,56 @@ The Managerial Solution:
 - Delegated and assisted while designing the complex pages during the downtime
 
 The Outcome: Completely redesigned the website in one day. Only minor details needed adjusting after the sprint.`,
+  },
+  {
+    id: 11,
+    title: "Moel the Mole",
+    description:
+      "I wrote and published a children's storybook that helps parents assess their kids' eyesight, and founded Wennerqvist Publishing AB to bring it to market.",
+    category: "Published Book & Entrepreneurship",
+    imageUrl: "public/assets/moel-cover.png",
+    link: "https://a.co/d/0fCVu0nk",
+    linkLabel: "View on Amazon",
+    publisherLogo: "public/assets/wennerqvist-logo.png",
+    publisherName: "Wennerqvist Publishing AB",
+    gallery: [
+      {
+        label: "Inside the book",
+        images: [
+          "public/assets/moel-page-genie.png",
+          "public/assets/moel-page-signs.png",
+        ],
+      },
+      {
+        label: "The author at work",
+        images: [
+          "public/assets/moel-jakob-reading.png",
+          "public/assets/moel-jakob-holding.png",
+        ],
+      },
+    ],
+    reviews: [
+      {
+        stars: 5,
+        quote:
+          "It is really impressive how much is packed into this one little book. It tells a wonderful and highly imaginative tale with colorful pictures and has interactive pages. As a school professional, I know this book will keep your child engaged and entertained. I HIGHLY recommend Moel the Mole! I even bought extra copies as gifts.",
+        author: "N — School Social Worker, Verified Purchase",
+      },
+      {
+        stars: 5,
+        quote:
+          "As a mother of three children, I find this book super helpful to guide parents as to whether or not their children may have any visual impairments. What a fun and creative way to reach out and test children. Thank you Jakob Wennerqvist for your efforts to help seamlessly bridge the gap for those who may have an undetected visual condition.",
+        author: "Helene — Mother of three, Verified Purchase",
+      },
+      {
+        stars: 5,
+        quote:
+          "As an aspiring future teacher, this book opened my eyes to the different types of difficulties children can face visually. Not only did this book have an engaging and fun plot, it also assesses a child's vision in an informative way. I would highly recommend this book for any parents and teachers!",
+        author: "Beata — Future teacher",
+      },
+    ],
+    reviewsLink: "https://a.co/d/0fCVu0nk",
+    caseLabel: "About the Project",
+    fullDescription: `After seeing how inadequate vision screening for children is in the US, I decided to do something about it. Moel the Mole became the solution. I spent 5 months researching and writing a book that helps parents assess their children's eyesight. In November 2023, it went live on Amazon.`,
   },
 ];

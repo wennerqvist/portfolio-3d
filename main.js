@@ -366,6 +366,7 @@ const detailsIndexEl = document.getElementById("details-index");
 const detailsAward = document.getElementById("details-award");
 const detailsLink = document.getElementById("details-link");
 const detailsCaseSection = document.getElementById("details-case-section");
+const detailsCaseLabel = document.getElementById("details-case-label");
 const detailsCase = document.getElementById("details-case");
 const detailsKpiSection = document.getElementById("details-kpi-section");
 const detailsKpiLabel = document.getElementById("details-kpi-label");
@@ -376,6 +377,14 @@ const detailsPdfSection = document.getElementById("details-pdf-section");
 const detailsPdfContainer = document.getElementById("details-pdf");
 const detailsPdfStatus = document.getElementById("details-pdf-status");
 const detailsPdfOpen = document.getElementById("details-pdf-open");
+const detailsPublisher = document.getElementById("details-publisher");
+const detailsPublisherLogo = document.getElementById("details-publisher-logo");
+const detailsPublisherName = document.getElementById("details-publisher-name");
+const detailsGallerySection = document.getElementById("details-gallery-section");
+const detailsGallery = document.getElementById("details-gallery");
+const detailsReviewsSection = document.getElementById("details-reviews-section");
+const detailsReviews = document.getElementById("details-reviews");
+const detailsReviewsMore = document.getElementById("details-reviews-more");
 
 /* --- Case study: light markup from plain text. Blank lines separate
        blocks; "Label:" (with optional inline text) becomes a heading,
@@ -534,12 +543,23 @@ function populateDetails(project, index) {
     project.link && project.youtubeId && project.link.includes(project.youtubeId);
   detailsLink.style.display = project.link && !linkIsEmbedded ? "" : "none";
   if (project.link) detailsLink.href = project.link;
+  detailsLink.textContent = `${project.linkLabel || "Visit project"} ↗`;
+  detailsLink.classList.toggle("primary", Boolean(project.linkLabel));
+
+  detailsPublisher.hidden = !project.publisherLogo;
+  if (project.publisherLogo) {
+    detailsPublisherLogo.src = project.publisherLogo;
+    detailsPublisherName.textContent = project.publisherName || "";
+  }
 
   detailsLenis.scrollTo(0, { immediate: true, force: true });
 
   // Optional long-form case study + media embeds
   detailsCaseSection.hidden = !project.fullDescription;
-  if (project.fullDescription) renderCaseStudy(project.fullDescription);
+  if (project.fullDescription) {
+    detailsCaseLabel.textContent = project.caseLabel || "Case Study";
+    renderCaseStudy(project.fullDescription);
+  }
 
   const hasKpis = Boolean(project.kpis && project.kpis.length);
   detailsKpiSection.hidden = !hasKpis;
@@ -569,6 +589,61 @@ function populateDetails(project, index) {
   if (project.pdfUrl) {
     detailsPdfOpen.href = project.pdfUrl;
     renderPdf(project.pdfUrl);
+  }
+
+  const hasGallery = Boolean(project.gallery && project.gallery.length);
+  detailsGallerySection.hidden = !hasGallery;
+  if (hasGallery) {
+    detailsGallery.innerHTML = "";
+    project.gallery.forEach(({ label, images }) => {
+      const group = document.createElement("div");
+      group.className = "gallery-group";
+      const h = document.createElement("h3");
+      h.className = "extra-label";
+      h.textContent = label;
+      const grid = document.createElement("div");
+      grid.className = "gallery-grid";
+      images.forEach((src) => {
+        const item = document.createElement("div");
+        item.className = "gallery-item";
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = label;
+        img.loading = "lazy";
+        item.appendChild(img);
+        grid.appendChild(item);
+      });
+      group.append(h, grid);
+      detailsGallery.appendChild(group);
+    });
+  }
+
+  const hasReviews = Boolean(project.reviews && project.reviews.length);
+  detailsReviewsSection.hidden = !hasReviews;
+  if (hasReviews) {
+    detailsReviews.innerHTML = "";
+    project.reviews.forEach(({ stars, quote, author }) => {
+      const card = document.createElement("figure");
+      card.className = "review-card";
+      if (stars) {
+        const s = document.createElement("div");
+        s.className = "review-stars";
+        s.textContent = "★".repeat(stars) + "☆".repeat(Math.max(0, 5 - stars));
+        s.setAttribute("aria-label", `${stars} out of 5 stars`);
+        card.appendChild(s);
+      }
+      const q = document.createElement("blockquote");
+      q.textContent = quote;
+      card.appendChild(q);
+      if (author) {
+        const cap = document.createElement("figcaption");
+        cap.textContent = `— ${author}`;
+        card.appendChild(cap);
+      }
+      detailsReviews.appendChild(card);
+    });
+    detailsReviewsMore.hidden = !project.reviewsLink;
+    if (project.reviewsLink) detailsReviewsMore.href = project.reviewsLink;
   }
 }
 

@@ -143,6 +143,10 @@
           </div>
           <h2 id="details-title"></h2>
           <p id="details-description"></p>
+          <div class="details-publisher" id="details-publisher" hidden>
+            <img id="details-publisher-logo" alt="Publisher logo" />
+            <span id="details-publisher-name"></span>
+          </div>
           <div class="details-tags" id="details-tags"></div>
           <a class="details-link" id="details-link" target="_blank" rel="noopener">Visit project &#8599;</a>
         </div>
@@ -151,8 +155,13 @@
       <!-- Optional media embeds (shown only for projects that define them) -->
       <div class="details-extras">
         <div class="details-extra" id="details-case-section">
-          <h3 class="extra-label">Case Study</h3>
+          <h3 class="extra-label" id="details-case-label">Case Study</h3>
           <div class="case-study" id="details-case"></div>
+        </div>
+        <div class="details-extra" id="details-reviews-section">
+          <h3 class="extra-label">Reader Reviews</h3>
+          <div class="review-grid" id="details-reviews"></div>
+          <a class="reviews-more" id="details-reviews-more" target="_blank" rel="noopener" hidden>Read more reviews on Amazon &#8599;</a>
         </div>
         <div class="details-extra" id="details-kpi-section">
           <h3 class="extra-label" id="details-kpi-label">Results</h3>
@@ -177,6 +186,9 @@
           <div class="pdf-viewer" id="details-pdf">
             <p class="pdf-status" id="details-pdf-status">Loading deck&hellip;</p>
           </div>
+        </div>
+        <div class="details-extra" id="details-gallery-section">
+          <div class="details-gallery" id="details-gallery"></div>
         </div>
       </div>
     </div>

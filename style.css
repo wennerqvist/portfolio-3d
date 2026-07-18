@@ -1079,6 +1079,145 @@ body::-webkit-scrollbar {
   color: var(--fg);
 }
 
+/* ---------- Details: publisher mark + filled CTA variant ---------- */
+
+.details-publisher {
+  margin-top: 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.details-publisher[hidden] {
+  display: none;
+}
+
+.details-publisher img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.details-publisher span {
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Projects with a custom link label (e.g. "View on Amazon") get a
+   filled accent button so the CTA reads as primary */
+.details-link.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.details-link.primary:hover {
+  background: transparent;
+  color: var(--fg);
+}
+
+/* ---------- Details: image gallery ---------- */
+
+.details-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.gallery-grid {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.gallery-item {
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.gallery-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.5s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+/* ---------- Details: reader reviews ---------- */
+
+.review-grid {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.review-card {
+  padding: 1.5rem 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid var(--accent);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.review-stars {
+  color: #fbbf24;
+  font-size: 0.95rem;
+  letter-spacing: 0.22em;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
+}
+
+.review-card blockquote {
+  margin-top: 0.9rem;
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(242, 242, 240, 0.6);
+}
+
+.review-card figcaption {
+  margin-top: 1rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.reviews-more {
+  display: inline-block;
+  margin-top: 1.4rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 0.2rem;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.reviews-more:hover {
+  color: var(--fg);
+  border-color: var(--accent);
+}
+
+.reviews-more[hidden] {
+  display: none;
+}
+
 @media (max-width: 860px) {
   .details {
     padding: 5.5rem 1.5rem 3rem;
@@ -1097,5 +1236,10 @@ body::-webkit-scrollbar {
 
   .kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gallery-grid,
+  .review-grid {
+    grid-template-columns: 1fr;
   }
 }
