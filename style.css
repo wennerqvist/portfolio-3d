@@ -26,6 +26,10 @@ body {
   height: 100%;
   display: block;
   cursor: grab;
+  /* Touch drags rotate the globe instead of scrolling the page */
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 #webgl.dragging {

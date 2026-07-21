@@ -775,17 +775,25 @@ let targetY = 0;
 let targetX = 0;
 const X_LIMIT = Math.PI / 4;
 
+// Touch devices drag the globe directly; scroll-driven rotation is desktop-only
+const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+if (isCoarsePointer) {
+  document.querySelector(".hint").textContent = "Drag to explore";
+}
+
 // --- Drag ---
 const DRAG_SENSITIVITY = 0.95; // full screen-width swipe ≈ a third of a turn
 let dragging = false;
 let lastPointer = { x: 0, y: 0 };
 let dragVelocityY = 0; // smoothed, so a single jittery event can't spike inertia
+let dragIsTouch = false;
 
 let downPointer = null; // where the pointer went down, to tell clicks from drags
 
 canvas.addEventListener("pointerdown", (e) => {
   if (detailsOpen || currentPage !== "work") return;
   dragging = true;
+  dragIsTouch = e.pointerType === "touch";
   canvas.classList.add("dragging");
   lastPointer = { x: e.clientX, y: e.clientY };
   downPointer = { x: e.clientX, y: e.clientY };
@@ -818,7 +826,9 @@ const endDrag = () => {
 
   // Momentum: the release velocity carries the view onward, and the
   // long power3 ease in rotateY lets it glide smoothly to a stop.
-  targetY += dragVelocityY * 14;
+  // Finger flicks report higher per-event velocities than mouse drags,
+  // so touch gets a gentler multiplier to avoid overshooting.
+  targetY += dragVelocityY * (dragIsTouch ? 8 : 14);
   rotateY(targetY);
 };
 canvas.addEventListener("pointerup", (e) => {
@@ -850,7 +860,9 @@ let lastScroll = 0;
 lenis.on("scroll", ({ scroll }) => {
   const delta = scroll - lastScroll;
   lastScroll = scroll;
-  if (detailsOpen || currentPage !== "work") return;
+  // Touch devices rotate by dragging the canvas; stray scroll events
+  // (e.g. mobile address-bar resizes) must not spin the globe.
+  if (isCoarsePointer || detailsOpen || currentPage !== "work") return;
   targetY += delta * 0.0022;
   rotateY(targetY);
 });
