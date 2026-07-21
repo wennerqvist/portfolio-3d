@@ -43,60 +43,6 @@
 export const projects = [
   {
     id: 1,
-    title: "Nebula",
-    description:
-      "Real-time particle installation that reacts to visitors' movement, shown at the Nordic Light festival in Kiruna.",
-    category: "Interactive Installation",
-    imageUrl: "https://picsum.photos/seed/nebula-installation/800/600",
-    link: "https://example.com/work/nebula",
-  },
-  {
-    id: 2,
-    title: "Drift",
-    description:
-      "An infinite-scroll voyage across a procedurally generated ocean, built with custom Three.js shaders.",
-    category: "WebGL Experience",
-    imageUrl: "https://picsum.photos/seed/drift-ocean/800/600",
-    link: "https://example.com/work/drift",
-  },
-  {
-    id: 3,
-    title: "Mono",
-    description:
-      "Minimal identity system, packaging and typography for a specialty coffee roastery in Stockholm.",
-    category: "Brand Identity",
-    imageUrl: "https://picsum.photos/seed/mono-brand/800/600",
-    link: null,
-  },
-  {
-    id: 4,
-    title: "Pulse",
-    description:
-      "Music visualizer that maps live frequency data onto a pulsing geometric landscape, synced to the beat.",
-    category: "Audio Visualizer",
-    imageUrl: "https://picsum.photos/seed/pulse-audio/800/600",
-    link: "https://example.com/work/pulse",
-  },
-  {
-    id: 5,
-    title: "Terra",
-    description:
-      "Interactive 3D globe visualizing a decade of global climate data for a science museum exhibit.",
-    category: "Data Visualization",
-    imageUrl: "https://picsum.photos/seed/terra-globe/800/600",
-    link: "https://example.com/work/terra",
-  },
-  {
-    id: 6,
-    title: "Echo",
-    description:
-      "Kinetic typography and full motion package for an indie game studio's launch trailer.",
-    category: "Motion Design",
-    imageUrl: "https://picsum.photos/seed/echo-motion/800/600",
-    link: null,
-  },
-  {
-    id: 7,
     title: "Ørsted Advertising Campaign",
     description:
       "Repositioned renewable energy company Ørsted from targeting environmentally-conscious consumers to positioning as the energy solution for scaling AI and cloud computing companies. Campaign emphasized the codependency between nature and human development through OOH ads and digital videos in tech hubs like San Francisco and Seattle.",
@@ -126,7 +72,7 @@ Strategy:
 - Digital campaign with video ads on YouTube, X, and GitHub to reach tech workers`,
   },
   {
-    id: 8,
+    id: 2,
     title: "The Illusion of Difference: Cultural Adaptation in European Websites",
     description:
       "What if everything we think about cultural differences in marketing is wrong? This Master's Thesis challenges the assumption that European markets require extensive localization — through comparative content analysis of five multinational companies, it shows that standardization dominates, with only 10-20% of website elements adapted across culturally distinct markets.",
@@ -153,7 +99,7 @@ The Framework: The research introduces a three-tier decision framework categoriz
 The Result: Defended with highest honors, this thesis bridges the gap between cultural theory and managerial practice in digital communication.`,
   },
   {
-    id: 9,
+    id: 3,
     title: "How I Made This Website",
     description:
       "This portfolio website is a 3D interactive gallery built with Three.js, showcasing a spherical interior dome where project cards float in space. Built while learning Claude Code, it demonstrates how AI-assisted development can accelerate bringing ambitious ideas to life.",
@@ -175,7 +121,7 @@ Built with Claude Code: The site was built while learning Claude Code, and it de
 Shipping It: The entire project is version-controlled with GitHub and deployed on Netlify with a custom domain, showcasing both technical execution and deployment workflow.`,
   },
   {
-    id: 10,
+    id: 4,
     title: "WorldLangAmerica Website Redesign",
     description:
       "Led a remote team of 5 to completely redesign a nonprofit's website in a single day. The results after 2 weeks: +261% page views, +100% checkouts, and +480% revenue per visit.",
@@ -221,7 +167,7 @@ The Managerial Solution:
 The Outcome: Completely redesigned the website in one day. Only minor details needed adjusting after the sprint.`,
   },
   {
-    id: 11,
+    id: 5,
     title: "Moel the Mole",
     description:
       "I wrote and published a children's storybook that helps parents assess their kids' eyesight, and founded Wennerqvist Publishing AB to bring it to market.",
