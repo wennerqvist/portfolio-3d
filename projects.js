@@ -42,34 +42,55 @@
 
 export const projects = [
   {
-    id: 1,
-    title: "Ørsted Advertising Campaign",
+    id: 5,
+    title: "Moel the Mole",
     description:
-      "Repositioned renewable energy company Ørsted from targeting environmentally-conscious consumers to positioning as the energy solution for scaling AI and cloud computing companies. Campaign emphasized the codependency between nature and human development through OOH ads and digital videos in tech hubs like San Francisco and Seattle.",
-    category: "Advertising Campaign",
-    imageUrl: "public/assets/orsted-campaign.png",
-    link: "https://youtu.be/5riIfXXbBmI?si=dW-0v9kB2_y0wnj1",
-    youtubeId: "5riIfXXbBmI",
-    pdfUrl: "public/assets/Orsted_Advertising_Campaign.pdf",
-    fullDescription: `Context: Final group project in Advanced Communication Management class in my MBA at Rome City Institute.
-
-Task: Reposition the renewable energy company Ørsted by creating an advertising campaign.
-
-Current Ørsted Positioning:
-- Broad positioning: Renewable energy leader committed to sustainability with focus on wind and solar energy
-- Advertising target audience: Environmentally conscious consumers
-
-Solution:
-- Illustrate that renewable energy is the only sustainable way to expand energy consumption and the only way to bring humanity forward
-- Repositioned Ørsted as the top-of-mind choice for AI and cloud computing companies
-
-Target Audience:
-- AI and cloud companies scaling up energy consumption
-- Reach both lower-level tech employees and high-level management to drive bottom-up and top-down industry influence
-
-Strategy:
-- OOH ads and events in tech cities like San Francisco and Seattle to influence industry mindset towards sustainability
-- Digital campaign with video ads on YouTube, X, and GitHub to reach tech workers`,
+      "I wrote and published a children's storybook that helps parents assess their kids' eyesight, and founded Wennerqvist Publishing AB to bring it to market.",
+    category: "Published Book & Entrepreneurship",
+    imageUrl: "public/assets/moel-cover.png",
+    link: "https://a.co/d/0fCVu0nk",
+    linkLabel: "View on Amazon",
+    publisherLogo: "public/assets/wennerqvist-logo.png",
+    publisherName: "Wennerqvist Publishing AB",
+    gallery: [
+      {
+        label: "Inside the book",
+        images: [
+          "public/assets/moel-page-genie.png",
+          "public/assets/moel-page-signs.png",
+        ],
+      },
+      {
+        label: "The author at work",
+        images: [
+          "public/assets/moel-jakob-reading.png",
+          "public/assets/moel-jakob-holding.png",
+        ],
+      },
+    ],
+    reviews: [
+      {
+        stars: 5,
+        quote:
+          "It is really impressive how much is packed into this one little book. It tells a wonderful and highly imaginative tale with colorful pictures and has interactive pages. As a school professional, I know this book will keep your child engaged and entertained. I HIGHLY recommend Moel the Mole! I even bought extra copies as gifts.",
+        author: "N — School Social Worker, Verified Purchase",
+      },
+      {
+        stars: 5,
+        quote:
+          "As a mother of three children, I find this book super helpful to guide parents as to whether or not their children may have any visual impairments. What a fun and creative way to reach out and test children. Thank you Jakob Wennerqvist for your efforts to help seamlessly bridge the gap for those who may have an undetected visual condition.",
+        author: "Helene — Mother of three, Verified Purchase",
+      },
+      {
+        stars: 5,
+        quote:
+          "As an aspiring future teacher, this book opened my eyes to the different types of difficulties children can face visually. Not only did this book have an engaging and fun plot, it also assesses a child's vision in an informative way. I would highly recommend this book for any parents and teachers!",
+        author: "Beata — Future teacher",
+      },
+    ],
+    reviewsLink: "https://a.co/d/0fCVu0nk",
+    caseLabel: "About the Project",
+    fullDescription: `After seeing how inadequate vision screening for children is in the US, I decided to do something about it. Moel the Mole became the solution. I spent 5 months researching and writing a book that helps parents assess their children's eyesight. In November 2023, it went live on Amazon.`,
   },
   {
     id: 2,
@@ -167,54 +188,33 @@ The Managerial Solution:
 The Outcome: Completely redesigned the website in one day. Only minor details needed adjusting after the sprint.`,
   },
   {
-    id: 5,
-    title: "Moel the Mole",
+    id: 1,
+    title: "Ørsted Advertising Campaign",
     description:
-      "I wrote and published a children's storybook that helps parents assess their kids' eyesight, and founded Wennerqvist Publishing AB to bring it to market.",
-    category: "Published Book & Entrepreneurship",
-    imageUrl: "public/assets/moel-cover.png",
-    link: "https://a.co/d/0fCVu0nk",
-    linkLabel: "View on Amazon",
-    publisherLogo: "public/assets/wennerqvist-logo.png",
-    publisherName: "Wennerqvist Publishing AB",
-    gallery: [
-      {
-        label: "Inside the book",
-        images: [
-          "public/assets/moel-page-genie.png",
-          "public/assets/moel-page-signs.png",
-        ],
-      },
-      {
-        label: "The author at work",
-        images: [
-          "public/assets/moel-jakob-reading.png",
-          "public/assets/moel-jakob-holding.png",
-        ],
-      },
-    ],
-    reviews: [
-      {
-        stars: 5,
-        quote:
-          "It is really impressive how much is packed into this one little book. It tells a wonderful and highly imaginative tale with colorful pictures and has interactive pages. As a school professional, I know this book will keep your child engaged and entertained. I HIGHLY recommend Moel the Mole! I even bought extra copies as gifts.",
-        author: "N — School Social Worker, Verified Purchase",
-      },
-      {
-        stars: 5,
-        quote:
-          "As a mother of three children, I find this book super helpful to guide parents as to whether or not their children may have any visual impairments. What a fun and creative way to reach out and test children. Thank you Jakob Wennerqvist for your efforts to help seamlessly bridge the gap for those who may have an undetected visual condition.",
-        author: "Helene — Mother of three, Verified Purchase",
-      },
-      {
-        stars: 5,
-        quote:
-          "As an aspiring future teacher, this book opened my eyes to the different types of difficulties children can face visually. Not only did this book have an engaging and fun plot, it also assesses a child's vision in an informative way. I would highly recommend this book for any parents and teachers!",
-        author: "Beata — Future teacher",
-      },
-    ],
-    reviewsLink: "https://a.co/d/0fCVu0nk",
-    caseLabel: "About the Project",
-    fullDescription: `After seeing how inadequate vision screening for children is in the US, I decided to do something about it. Moel the Mole became the solution. I spent 5 months researching and writing a book that helps parents assess their children's eyesight. In November 2023, it went live on Amazon.`,
+      "Repositioned renewable energy company Ørsted from targeting environmentally-conscious consumers to positioning as the energy solution for scaling AI and cloud computing companies. Campaign emphasized the codependency between nature and human development through OOH ads and digital videos in tech hubs like San Francisco and Seattle.",
+    category: "Advertising Campaign",
+    imageUrl: "public/assets/orsted-campaign.png",
+    link: "https://youtu.be/5riIfXXbBmI?si=dW-0v9kB2_y0wnj1",
+    youtubeId: "5riIfXXbBmI",
+    pdfUrl: "public/assets/Orsted_Advertising_Campaign.pdf",
+    fullDescription: `Context: Final group project in Advanced Communication Management class in my MBA at Rome City Institute.
+
+Task: Reposition the renewable energy company Ørsted by creating an advertising campaign.
+
+Current Ørsted Positioning:
+- Broad positioning: Renewable energy leader committed to sustainability with focus on wind and solar energy
+- Advertising target audience: Environmentally conscious consumers
+
+Solution:
+- Illustrate that renewable energy is the only sustainable way to expand energy consumption and the only way to bring humanity forward
+- Repositioned Ørsted as the top-of-mind choice for AI and cloud computing companies
+
+Target Audience:
+- AI and cloud companies scaling up energy consumption
+- Reach both lower-level tech employees and high-level management to drive bottom-up and top-down industry influence
+
+Strategy:
+- OOH ads and events in tech cities like San Francisco and Seattle to influence industry mindset towards sustainability
+- Digital campaign with video ads on YouTube, X, and GitHub to reach tech workers`,
   },
 ];

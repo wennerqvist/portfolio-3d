@@ -1,6 +1,19 @@
 import * as THREE from "three";
 import { projects as PROJECTS } from "./projects.js";
 
+function toSlug(title) {
+  return title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")    // strip combining diacritics (é → e)
+    .replace(/[øØ]/g, "o")              // Nordic chars NFD doesn't decompose
+    .replace(/[åÅ]/g, "a")
+    .replace(/[æÆ]/g, "ae")
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
 const DOME_RADIUS = 8; // the wire dome around the viewer
 const CARD_DISTANCE = 6.5; // cards float on the dome's inner wall
 
@@ -652,6 +665,7 @@ function openDetails(card) {
   detailsOpen = true;
   transitioning = true;
   activeCard = card;
+  history.replaceState(null, "", `#${toSlug(card.userData.project.title)}`);
 
   populateDetails(card.userData.project, card.userData.index);
 
@@ -707,6 +721,7 @@ function openDetails(card) {
 function closeDetails() {
   if (!detailsOpen || transitioning || !activeCard) return;
   transitioning = true;
+  history.replaceState(null, "", "#work");
   const card = activeCard;
 
   // Back into the world group; from here "home" is a fixed local spot
@@ -910,11 +925,15 @@ gsap.to(fovTween, {
 });
 // Deep-linking to #about / #contact skips the gallery UI intro — those
 // tweens would otherwise fade the hero/footer back in over the page.
-const START_PAGE = ["about", "contact"].includes(location.hash.replace("#", ""))
-  ? location.hash.replace("#", "")
-  : "work";
+// A project slug hash (e.g. #orsted-campaign) also skips the work intro
+// and opens that project's overlay after a brief settle delay.
+const START_HASH = location.hash.replace("#", "");
+const START_PAGE = ["about", "contact"].includes(START_HASH) ? START_HASH : "work";
+const START_PROJECT = START_PAGE === "work"
+  ? cards.find(c => toSlug(c.userData.project.title) === START_HASH) || null
+  : null;
 
-if (START_PAGE === "work") {
+if (START_PAGE === "work" && !START_PROJECT) {
   gsap.from(".ui-hero h1", { yPercent: 40, opacity: 0, duration: 1.2, ease: "power3.out", delay: 0.3 });
   gsap.from(".subtitle, .ui-footer, .ui-header", { opacity: 0, duration: 1, delay: 0.8 });
 } else {
@@ -1112,14 +1131,26 @@ navLinks.forEach((link) => {
   });
 });
 
-// Deep link: opening the site at #about or #contact lands on that page
+// Deep link: opening the site at #about or #contact lands on that page;
+// a project slug opens that project's overlay after the scene settles.
 if (START_PAGE !== "work") goToPage(START_PAGE);
+if (START_PROJECT) gsap.delayedCall(0.5, () => openDetails(START_PROJECT));
 
 // Hash-only navigation (browser back/forward, or typing a hash) also
-// switches pages; goToPage no-ops when already there.
+// switches pages or opens projects; goToPage no-ops when already there.
 window.addEventListener("hashchange", () => {
-  const target = location.hash.replace("#", "");
-  goToPage(target in PAGES ? target : "work");
+  const hash = location.hash.replace("#", "");
+  if (hash in PAGES) {
+    goToPage(hash);
+  } else {
+    const card = cards.find(c => toSlug(c.userData.project.title) === hash);
+    if (card) {
+      if (currentPage !== "work") goToPage("work");
+      openDetails(card);
+    } else {
+      goToPage("work");
+    }
+  }
 });
 
 /* ------------------------------------------------------------------ */
