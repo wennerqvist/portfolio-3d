@@ -38,7 +38,20 @@
 /*                [{ stars, quote, author }, ...] (stars 1-5)          */
 /*    reviewsLink optional — "Read more reviews" link shown under the  */
 /*                review cards                                         */
+/*    tags        array of tag keys from TAG_COLORS (e.g. ["web","ai"])*/
 /* ------------------------------------------------------------------ */
+
+export const TAG_COLORS = {
+  writing:          "#F59E0B",
+  entrepreneurship: "#F97316",
+  research:         "#60A5FA",
+  design:           "#F472B6",
+  web:              "#34D399",
+  ai:               "#A78BFA",
+  leadership:       "#4ADE80",
+  advertising:      "#FB7185",
+  soccer:           "#86EFAC",
+};
 
 export const projects = [
   {
@@ -47,6 +60,7 @@ export const projects = [
     description:
       "I wrote and published a children's storybook that helps parents assess their kids' eyesight, and founded Wennerqvist Publishing AB to bring it to market.",
     category: "Published Book & Entrepreneurship",
+    tags: ["writing", "entrepreneurship"],
     imageUrl: "public/assets/moel-cover.png",
     link: "https://a.co/d/0fCVu0nk",
     linkLabel: "View on Amazon",
@@ -98,6 +112,7 @@ export const projects = [
     description:
       "What if everything we think about cultural differences in marketing is wrong? This Master's Thesis challenges the assumption that European markets require extensive localization — through comparative content analysis of five multinational companies, it shows that standardization dominates, with only 10-20% of website elements adapted across culturally distinct markets.",
     category: "Master's Thesis",
+    tags: ["research", "design"],
     imageUrl: "public/assets/thesis-presentation.jpg",
     link: null,
     pdfUrl: "public/assets/Jakob-Wennerqvist-Master-Thesis-Presentation.pdf",
@@ -125,6 +140,7 @@ The Result: Defended with highest honors, this thesis bridges the gap between cu
     description:
       "This portfolio website is a 3D interactive gallery built with Three.js, showcasing a spherical interior dome where project cards float in space. Built while learning Claude Code, it demonstrates how AI-assisted development can accelerate bringing ambitious ideas to life.",
     category: "Web Development & Claude Code",
+    tags: ["web", "ai"],
     imageUrl: "public/assets/portfolio-website-hero.png",
     link: null,
     fullDescription: `The Concept: This portfolio website is a 3D interactive gallery built with Three.js, showcasing a spherical interior dome where project cards float in space. The experience combines smooth drag-to-rotate interactions powered by GSAP animations and Lenis scroll easing, creating a fluid, immersive interface.
@@ -147,6 +163,7 @@ Shipping It: The entire project is version-controlled with GitHub and deployed o
     description:
       "Led a remote team of 5 to completely redesign a nonprofit's website in a single day. The results after 2 weeks: +261% page views, +100% checkouts, and +480% revenue per visit.",
     category: "Website Redesign & Team Leadership",
+    tags: ["web", "design", "leadership"],
     imageUrl: "public/assets/wla-redesign.png",
     link: null,
     pdfUrl: "public/assets/WLA-Website-Evolution.pdf",
@@ -193,6 +210,7 @@ The Outcome: Completely redesigned the website in one day. Only minor details ne
     description:
       "Repositioned renewable energy company Ørsted from targeting environmentally-conscious consumers to positioning as the energy solution for scaling AI and cloud computing companies. Campaign emphasized the codependency between nature and human development through OOH ads and digital videos in tech hubs like San Francisco and Seattle.",
     category: "Advertising Campaign",
+    tags: ["advertising"],
     imageUrl: "public/assets/orsted-campaign.png",
     link: "https://youtu.be/5riIfXXbBmI?si=dW-0v9kB2_y0wnj1",
     youtubeId: "5riIfXXbBmI",

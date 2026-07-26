@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { projects as PROJECTS } from "./projects.js";
+import { projects as PROJECTS, TAG_COLORS } from "./projects.js";
 
 function toSlug(title) {
   return title
@@ -14,8 +14,15 @@ function toSlug(title) {
     .replace(/\s+/g, "-");
 }
 
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 const DOME_RADIUS = 8; // the wire dome around the viewer
-const CARD_DISTANCE = 6.5; // cards float on the dome's inner wall
+const CARD_DISTANCE = 5.0; // cards float on the dome's inner wall
 
 /* ------------------------------------------------------------------ */
 /*  Scene setup — camera sits at the CENTER of the dome                */
@@ -245,15 +252,18 @@ function createCardTexture(project, index) {
     // Tag pills, phantom.land style
     let pillX = textX;
     const pillY = h - pad - 58;
-    category.split(" ").slice(0, 2).forEach((word) => {
-      const label = word.toUpperCase();
+    (project.tags || []).forEach((tag) => {
+      const label = tag.toUpperCase();
+      const color = TAG_COLORS[tag] || "#ffffff";
       ctx.font = "500 18px 'Courier New', monospace";
       const tw = ctx.measureText(label).width;
       roundedRectPath(ctx, pillX, pillY, tw + 28, 34, 17);
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
+      ctx.fillStyle = hexToRgba(color, 0.2);
+      ctx.fill();
+      ctx.strokeStyle = hexToRgba(color, 0.7);
       ctx.lineWidth = 1.5;
       ctx.stroke();
-      ctx.fillStyle = "rgba(242, 242, 240, 0.6)";
+      ctx.fillStyle = "#ffffff";
       ctx.fillText(label, pillX + 14, pillY + 23);
       pillX += tw + 40;
     });
@@ -544,11 +554,15 @@ function populateDetails(project, index) {
   detailsAward.textContent = project.award ? `★ ${project.award}` : "";
 
   detailsTags.innerHTML = "";
-  project.category.split(" ").filter((word) => word !== "&").forEach((word) => {
-    const tag = document.createElement("span");
-    tag.className = "details-tag";
-    tag.textContent = word.toUpperCase();
-    detailsTags.appendChild(tag);
+  (project.tags || []).forEach((tag) => {
+    const el = document.createElement("span");
+    el.className = "details-tag";
+    el.textContent = tag.toUpperCase();
+    const color = TAG_COLORS[tag] || "#ffffff";
+    el.style.backgroundColor = hexToRgba(color, 0.15);
+    el.style.borderColor = hexToRgba(color, 0.5);
+    el.style.color = color;
+    detailsTags.appendChild(el);
   });
 
   // Hide "Visit project" when it would only duplicate the embedded video
