@@ -1018,8 +1018,38 @@ body::-webkit-scrollbar {
   color: var(--fg);
 }
 
-.case-study {
+.case-study > h4,
+.case-study > p,
+.case-study > ul {
   max-width: 68ch;
+}
+
+.case-section-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-top: 2rem;
+}
+
+.case-section-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.case-section-images {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 0 0 180px;
+}
+
+.case-section-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .case-study h4 {
@@ -1059,6 +1089,157 @@ body::-webkit-scrollbar {
   left: 0;
   color: var(--accent);
 }
+
+.case-section-text h4 {
+  margin-top: 0;
+}
+
+/* ---------- Football / banner layout ---------- */
+
+.details-hero-banner[hidden] { display: none; }
+
+.details-hero-banner img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  margin-bottom: 2.5rem;
+}
+
+/* Horizontal player stats strip (replaces side card for banner layout) */
+.details-stats-strip[hidden] { display: none; }
+
+.details-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 1.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.details-stats-item {
+  padding: 1rem 1.2rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.details-stats-item:nth-child(3n) {
+  border-right: none;
+}
+
+.details-stats-item:nth-last-child(-n+3) {
+  border-bottom: none;
+}
+
+.details-stats-val {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1.3;
+}
+
+.details-stats-lbl {
+  margin-top: 0.3rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Experience cards (image grid left + text right) */
+.exp-card {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.exp-card + .exp-card {
+  margin-top: 1rem;
+}
+
+.exp-images {
+  flex: 0 0 42%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 220px;
+}
+
+.exp-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.exp-img--logo {
+  background: #fff;
+  padding: 14px;
+}
+
+.exp-img + .exp-img {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.exp-text {
+  flex: 1;
+  padding: 1.6rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.exp-text h4 {
+  margin-top: 0;
+  font-family: "Courier New", monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.exp-text p {
+  margin-top: 0.7rem;
+  color: rgba(242, 242, 240, 0.6);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.exp-text ul {
+  margin-top: 0.7rem;
+  list-style: none;
+}
+
+.exp-text li {
+  position: relative;
+  padding-left: 1.4rem;
+  margin-top: 0.45rem;
+  color: rgba(242, 242, 240, 0.6);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.exp-text li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* Experience before video for football layout */
+.football-layout #details-case-section  { order: 0; }
+.football-layout #details-video-section { order: 1; }
 
 .kpi-grid {
   margin-top: 1.2rem;
@@ -1319,5 +1500,61 @@ body::-webkit-scrollbar {
   .gallery-grid,
   .review-grid {
     grid-template-columns: 1fr;
+  }
+
+  .case-section-row {
+    flex-direction: column;
+  }
+
+  .case-section-images {
+    flex: 0 0 auto;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .case-section-img {
+    flex: 1;
+  }
+
+  .details-hero-banner img {
+    aspect-ratio: 16 / 9;
+    margin-bottom: 1.5rem;
+  }
+
+  .details-stats-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .details-stats-item:nth-child(3n) {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .details-stats-item:nth-child(even) {
+    border-right: none;
+  }
+
+  .details-stats-item:nth-last-child(-n+3) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .details-stats-item:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+
+  .exp-card {
+    flex-direction: column;
+  }
+
+  .exp-images {
+    flex: 0 0 auto;
+    height: 160px;
+  }
+
+  .exp-img {
+    min-height: 0;
+  }
+
+  .exp-text {
+    padding: 1.25rem;
   }
 }

@@ -216,7 +216,7 @@ The Outcome: Completely redesigned the website in one day. Only minor details ne
     category: "Semi-Professional Football",
     tags: ["soccer"],
     year: 2025,
-    imageUrl: null,
+    imageUrl: "public/assets/npu-last-game.jpg",
     link: null,
     youtubeId: "lEUGTgeKsKk",
     videoLabel: "Highlight Reel",
@@ -228,8 +228,17 @@ The Outcome: Completely redesigned the website in one day. Only minor details ne
       { label: "Preferred Foot", value: "Right" },
       { label: "Nationality", value: "Sweden (EU Passport)" },
     ],
+    heroLayout: "banner",
     caseLabel: "Experience",
-    fullDescription: `Professional Trial in Ecuador: In February 2025, I went on a 10-day trial with a professional team in Ecuador's third tier (Segunda Categoría). The coach gave me direct feedback confirming I can play at that level — other uncontrollable factors prevented a contract offer.
+    sectionImages: {
+      "AS Urbetevere — Italian Promozione (6th Tier)": ["public/assets/urbe-logo.jpg", "public/assets/urbe-duel.JPG"],
+      "Professional Trial in Ecuador": ["public/assets/cumbre-logo.png", "public/assets/cumbre-pryse.JPG"],
+      "IK Zenith — Swedish Division 2 (4th Tier)": ["public/assets/zenith-logo.png", "public/assets/zenith-ball.JPG"],
+      "North Park University — NCAA Division III": ["public/assets/npu-logo.png", "public/assets/npu-first-game-back.jpg"],
+    },
+    fullDescription: `AS Urbetevere — Italian Promozione (6th Tier): In 2025, I played for this Roman club in the Promozione league.
+
+Professional Trial in Ecuador: In February 2025, I went on a 10-day trial with a professional team in Ecuador's third tier (Segunda Categoría). The coach gave me direct feedback confirming I can play at that level — other uncontrollable factors prevented a contract offer.
 
 IK Zenith — Swedish Division 2 (4th Tier):
 - Went undefeated in all games played during the 2023 season
@@ -240,9 +249,7 @@ North Park University — NCAA Division III:
 - Played from 2022 to 2025 for a top-ranked Division III program
 - Team ranked 5th in the country in the 2022 season
 - Team ranked 8th in the country in the 2024 season
-- Received the 26 Elite Award for academic and athletic excellence
-
-AS Urbetevere — Italian Promozione (6th Tier): In 2025, I played for this Roman club in the Promozione league.`,
+- Received the 26 Elite Award for academic and athletic excellence`,
   },
   {
     id: 7,

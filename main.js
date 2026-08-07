@@ -381,6 +381,9 @@ function updateHover() {
 /* ------------------------------------------------------------------ */
 
 const detailsEl = document.getElementById("details");
+const detailsHeroBanner = document.getElementById("details-hero-banner");
+const detailsBannerImage = document.getElementById("details-banner-image");
+const detailsStatsStrip = document.getElementById("details-stats-strip");
 const detailsImage = document.getElementById("details-image");
 const detailsTitle = document.getElementById("details-title");
 const detailsDescription = document.getElementById("details-description");
@@ -419,25 +422,57 @@ const detailsVideoLabel = document.getElementById("details-video-label");
        blocks; "Label:" (with optional inline text) becomes a heading,
        "- " lines become bullets, everything else a paragraph. --- */
 
-function renderCaseStudy(text) {
+function renderCaseStudy(text, sectionImages) {
   detailsCase.innerHTML = "";
   text.trim().split(/\n\s*\n/).forEach((block) => {
     let lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
     if (!lines.length) return;
 
-    const heading = lines[0].match(/^([^:]+):\s*(.*)$/);
-    if (heading) {
+    const headingMatch = lines[0].match(/^([^:]+):\s*(.*)$/);
+    let headingText = null;
+    if (headingMatch) {
+      headingText = headingMatch[1];
+      lines = headingMatch[2] ? [headingMatch[2], ...lines.slice(1)] : lines.slice(1);
+    }
+
+    const images = headingText && sectionImages && sectionImages[headingText];
+    let textContainer;
+
+    if (images) {
+      const card = document.createElement("div");
+      card.className = "exp-card";
+      const imgCol = document.createElement("div");
+      imgCol.className = "exp-images";
+      images.forEach((src) => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = headingText;
+        img.loading = "lazy";
+        const isPng = src.toLowerCase().endsWith(".png");
+        img.className = isPng ? "exp-img exp-img--logo" : "exp-img";
+        img.style.objectFit = isPng ? "contain" : "cover";
+        if (src.includes("npu-first-game-back")) img.style.objectPosition = "center bottom";
+        imgCol.appendChild(img);
+      });
+      textContainer = document.createElement("div");
+      textContainer.className = "exp-text";
+      card.append(imgCol, textContainer);
+      detailsCase.appendChild(card);
+    } else {
+      textContainer = detailsCase;
+    }
+
+    if (headingText) {
       const h = document.createElement("h4");
-      h.textContent = heading[1];
-      detailsCase.appendChild(h);
-      lines = heading[2] ? [heading[2], ...lines.slice(1)] : lines.slice(1);
+      h.textContent = headingText;
+      textContainer.appendChild(h);
     }
 
     const paragraphs = lines.filter((l) => !l.startsWith("- "));
     if (paragraphs.length) {
       const p = document.createElement("p");
       p.textContent = paragraphs.join(" ");
-      detailsCase.appendChild(p);
+      textContainer.appendChild(p);
     }
 
     const bullets = lines.filter((l) => l.startsWith("- "));
@@ -448,7 +483,7 @@ function renderCaseStudy(text) {
         li.textContent = b.slice(2);
         ul.appendChild(li);
       });
-      detailsCase.appendChild(ul);
+      textContainer.appendChild(ul);
     }
   });
 }
@@ -546,6 +581,11 @@ const GALLERY_OPACITY = {
 };
 
 function populateDetails(project, index) {
+  const isBanner = project.heroLayout === "banner";
+  detailsEl.classList.toggle("football-layout", isBanner);
+
+  detailsHeroBanner.hidden = true;
+  detailsBannerImage.src = "";
   detailsImage.closest(".details-media").hidden = !project.imageUrl;
   detailsImage.src = project.imageUrl || "";
   detailsImage.alt = project.title;
@@ -574,16 +614,34 @@ function populateDetails(project, index) {
   });
 
   const hasStats = Boolean(project.stats && project.stats.length);
-  detailsPlayerStats.hidden = !hasStats;
+  // Banner projects use the horizontal stats strip; others use the side card
+  detailsPlayerStats.hidden = !hasStats || isBanner;
+  detailsStatsStrip.hidden = !(isBanner && hasStats);
   if (hasStats) {
-    detailsStatsList.innerHTML = "";
-    project.stats.forEach(({ label, value }) => {
-      const dt = document.createElement("dt");
-      dt.textContent = label;
-      const dd = document.createElement("dd");
-      dd.textContent = value;
-      detailsStatsList.append(dt, dd);
-    });
+    if (isBanner) {
+      detailsStatsStrip.innerHTML = "";
+      project.stats.forEach(({ label, value }) => {
+        const item = document.createElement("div");
+        item.className = "details-stats-item";
+        const val = document.createElement("div");
+        val.className = "details-stats-val";
+        val.textContent = value;
+        const lbl = document.createElement("div");
+        lbl.className = "details-stats-lbl";
+        lbl.textContent = label;
+        item.append(val, lbl);
+        detailsStatsStrip.appendChild(item);
+      });
+    } else {
+      detailsStatsList.innerHTML = "";
+      project.stats.forEach(({ label, value }) => {
+        const dt = document.createElement("dt");
+        dt.textContent = label;
+        const dd = document.createElement("dd");
+        dd.textContent = value;
+        detailsStatsList.append(dt, dd);
+      });
+    }
   }
 
   // Hide "Visit project" when it would only duplicate the embedded video
@@ -606,7 +664,7 @@ function populateDetails(project, index) {
   detailsCaseSection.hidden = !project.fullDescription;
   if (project.fullDescription) {
     detailsCaseLabel.textContent = project.caseLabel || "Case Study";
-    renderCaseStudy(project.fullDescription);
+    renderCaseStudy(project.fullDescription, project.sectionImages);
   }
 
   const hasKpis = Boolean(project.kpis && project.kpis.length);
