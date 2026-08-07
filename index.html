@@ -139,11 +139,17 @@
         <div class="details-content">
           <div class="details-meta">
             <span id="details-index">01</span>
-            <span>2026</span>
+            <span id="details-year">2026</span>
             <span class="details-award" id="details-award" hidden></span>
           </div>
           <h2 id="details-title"></h2>
-          <p id="details-description"></p>
+          <div class="details-desc-row">
+            <p id="details-description"></p>
+            <div class="details-player-stats" id="details-player-stats" hidden>
+              <div class="stats-card-label">My Stats</div>
+              <dl id="details-stats-list"></dl>
+            </div>
+          </div>
           <div class="details-publisher" id="details-publisher" hidden>
             <img id="details-publisher-logo" alt="Publisher logo" />
             <span id="details-publisher-name"></span>
@@ -155,6 +161,17 @@
 
       <!-- Optional media embeds (shown only for projects that define them) -->
       <div class="details-extras">
+        <div class="details-extra" id="details-video-section">
+          <h3 class="extra-label" id="details-video-label">Campaign Film</h3>
+          <div class="video-embed">
+            <iframe
+              id="details-video"
+              title="Campaign film"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
         <div class="details-extra" id="details-case-section">
           <h3 class="extra-label" id="details-case-label">Case Study</h3>
           <div class="case-study" id="details-case"></div>
@@ -168,14 +185,19 @@
           <h3 class="extra-label" id="details-kpi-label">Results</h3>
           <div class="kpi-grid" id="details-kpis"></div>
         </div>
-        <div class="details-extra" id="details-video-section">
-          <h3 class="extra-label">Campaign Film</h3>
-          <div class="video-embed">
+        <div class="details-extra" id="details-spotify-section">
+          <h3 class="extra-label">Listen to the Episode</h3>
+          <div class="spotify-embed">
             <iframe
-              id="details-video"
-              title="Campaign film"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              id="details-spotify"
+              style="border-radius:12px"
+              title="Podcast episode"
+              width="100%"
+              height="352"
+              frameborder="0"
               allowfullscreen
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
             ></iframe>
           </div>
         </div>

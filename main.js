@@ -217,7 +217,7 @@ function createCardTexture(project, index) {
     ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
     ctx.font = "500 22px 'Courier New', monospace";
     ctx.fillText(String(index + 1).padStart(2, "0"), imgX + 18, imgY + 34);
-    const year = "2026";
+    const year = String(project.year || 2026);
     ctx.fillText(year, imgX + imgW - 18 - ctx.measureText(year).width, imgY + 34);
     ctx.restore();
 
@@ -386,6 +386,7 @@ const detailsTitle = document.getElementById("details-title");
 const detailsDescription = document.getElementById("details-description");
 const detailsTags = document.getElementById("details-tags");
 const detailsIndexEl = document.getElementById("details-index");
+const detailsYearEl = document.getElementById("details-year");
 const detailsAward = document.getElementById("details-award");
 const detailsLink = document.getElementById("details-link");
 const detailsCaseSection = document.getElementById("details-case-section");
@@ -408,6 +409,11 @@ const detailsGallery = document.getElementById("details-gallery");
 const detailsReviewsSection = document.getElementById("details-reviews-section");
 const detailsReviews = document.getElementById("details-reviews");
 const detailsReviewsMore = document.getElementById("details-reviews-more");
+const detailsSpotifySection = document.getElementById("details-spotify-section");
+const detailsSpotify = document.getElementById("details-spotify");
+const detailsPlayerStats = document.getElementById("details-player-stats");
+const detailsStatsList = document.getElementById("details-stats-list");
+const detailsVideoLabel = document.getElementById("details-video-label");
 
 /* --- Case study: light markup from plain text. Blank lines separate
        blocks; "Label:" (with optional inline text) becomes a heading,
@@ -540,7 +546,8 @@ const GALLERY_OPACITY = {
 };
 
 function populateDetails(project, index) {
-  detailsImage.src = project.imageUrl;
+  detailsImage.closest(".details-media").hidden = !project.imageUrl;
+  detailsImage.src = project.imageUrl || "";
   detailsImage.alt = project.title;
   detailsTitle.textContent = project.title;
   // Single very long words (e.g. "WorldLangAmerica") can't wrap and would
@@ -549,6 +556,7 @@ function populateDetails(project, index) {
   detailsTitle.classList.toggle("long-title", longestWord > 12);
   detailsDescription.textContent = project.description;
   detailsIndexEl.textContent = String(index + 1).padStart(2, "0");
+  detailsYearEl.textContent = String(project.year || 2026);
 
   detailsAward.hidden = !project.award;
   detailsAward.textContent = project.award ? `★ ${project.award}` : "";
@@ -564,6 +572,19 @@ function populateDetails(project, index) {
     el.style.color = color;
     detailsTags.appendChild(el);
   });
+
+  const hasStats = Boolean(project.stats && project.stats.length);
+  detailsPlayerStats.hidden = !hasStats;
+  if (hasStats) {
+    detailsStatsList.innerHTML = "";
+    project.stats.forEach(({ label, value }) => {
+      const dt = document.createElement("dt");
+      dt.textContent = label;
+      const dd = document.createElement("dd");
+      dd.textContent = value;
+      detailsStatsList.append(dt, dd);
+    });
+  }
 
   // Hide "Visit project" when it would only duplicate the embedded video
   const linkIsEmbedded =
@@ -608,8 +629,14 @@ function populateDetails(project, index) {
   }
 
   detailsVideoSection.hidden = !project.youtubeId;
+  detailsVideoLabel.textContent = project.videoLabel || "Campaign Film";
   detailsVideo.src = project.youtubeId
     ? `https://www.youtube-nocookie.com/embed/${project.youtubeId}?rel=0`
+    : "";
+
+  detailsSpotifySection.hidden = project.type !== "spotify";
+  detailsSpotify.src = project.type === "spotify"
+    ? `https://open.spotify.com/embed/episode/${project.episodeId}/video?utm_source=generator&t=430`
     : "";
 
   detailsPdfSection.hidden = !project.pdfUrl;
@@ -754,8 +781,9 @@ function closeDetails() {
     },
   }));
 
-  // The overlay slips away (and the campaign film stops playing)
+  // The overlay slips away (campaign film and podcast player stop)
   detailsVideo.src = "";
+  detailsSpotify.src = "";
   tl.to([".details-back", ".details-media", ".details-content > *", ".details-extra"], { opacity: 0, y: 18, duration: 0.35, stagger: 0.03, ease: "power2.in" }, 0);
   tl.to(detailsEl, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0.15);
   tl.add(() => detailsEl.classList.remove("open"), 0.55);
@@ -1063,6 +1091,7 @@ function resetDetailsInstant() {
   detailsEl.classList.remove("open");
   gsap.set(detailsEl, { clearProps: "opacity" });
   detailsVideo.src = "";
+  detailsSpotify.src = "";
   detailsOpen = false;
   transitioning = false;
   activeCard = null;

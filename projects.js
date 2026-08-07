@@ -51,6 +51,10 @@ export const TAG_COLORS = {
   leadership:       "#4ADE80",
   advertising:      "#FB7185",
   soccer:           "#86EFAC",
+  speaking:         "#38BDF8",
+  culture:          "#FB923C",
+  swedish:          "#FACC15",
+  neuromarketing:   "#C084FC",
 };
 
 export const projects = [
@@ -203,6 +207,88 @@ The Managerial Solution:
 - Delegated and assisted while designing the complex pages during the downtime
 
 The Outcome: Completely redesigned the website in one day. Only minor details needed adjusting after the sprint.`,
+  },
+  {
+    id: 8,
+    title: "Football",
+    description:
+      "I'm a semi-professional football player with experience from the 4th tier in Sweden, a top college program in the US, Promozione in Italy, and a professional trial in Ecuador.",
+    category: "Semi-Professional Football",
+    tags: ["soccer"],
+    year: 2025,
+    imageUrl: null,
+    link: null,
+    youtubeId: "lEUGTgeKsKk",
+    videoLabel: "Highlight Reel",
+    stats: [
+      { label: "Date of Birth", value: "June 1, 2002" },
+      { label: "Position", value: "Center Back (Secondary: Right Back)" },
+      { label: "Height", value: "183 cm / 6'0\"" },
+      { label: "Weight", value: "83 kg / 183 lbs" },
+      { label: "Preferred Foot", value: "Right" },
+      { label: "Nationality", value: "Sweden (EU Passport)" },
+    ],
+    caseLabel: "Experience",
+    fullDescription: `Professional Trial in Ecuador: In February 2025, I went on a 10-day trial with a professional team in Ecuador's third tier (Segunda Categoría). The coach gave me direct feedback confirming I can play at that level — other uncontrollable factors prevented a contract offer.
+
+IK Zenith — Swedish Division 2 (4th Tier):
+- Went undefeated in all games played during the 2023 season
+- Beat second-tier club IK Oddevold in the Swedish Cup
+- Faced first-tier club IFK Göteborg in the following round
+
+North Park University — NCAA Division III:
+- Played from 2022 to 2025 for a top-ranked Division III program
+- Team ranked 5th in the country in the 2022 season
+- Team ranked 8th in the country in the 2024 season
+- Received the 26 Elite Award for academic and athletic excellence
+
+AS Urbetevere — Italian Promozione (6th Tier): In 2025, I played for this Roman club in the Promozione league.`,
+  },
+  {
+    id: 7,
+    title: "Locked in for Life",
+    description:
+      "Created for Neuromarketing class at Rome City Institute, this analysis explores how Apple engineers its ecosystem to trigger loss aversion — making users feel that switching brands means losing something valuable, not just changing a product.",
+    category: "Neuromarketing Research",
+    tags: ["research", "neuromarketing"],
+    year: 2025,
+    imageUrl: "public/assets/loss-aversion-cover.jpg",
+    pdfUrl: "public/assets/Loss-Aversion-Apple.pdf",
+    link: null,
+    caseLabel: "About the Research",
+    fullDescription: `The Question: Why do Apple users almost never switch — and what does neuroscience say about it?
+
+What is Loss Aversion:
+- Rooted in Kahneman & Tversky's Prospect Theory
+- Losses feel approximately twice as painful as equivalent gains feel pleasurable
+- We would rather avoid losing $10 than find $10 on the street
+
+Apple's Ecosystem Strategy: Apple doesn't sell isolated products — it sells a tightly integrated system where each device deepens your reliance on the next. The entry point is the iPhone, but the ecosystem expands step by step: AirPods, Apple Watch, MacBook, iCloud, AirTag. Every addition raises the psychological and practical cost of leaving.
+
+The Blue Bubble Effect:
+- Switching to Android means losing blue bubble status, read receipts, reactions, and AirDrop
+- Social losses are among the most painful: Eisenberger found that social exclusion activates the anterior cingulate cortex — the same brain region associated with physical pain
+- Apple has turned leaving the ecosystem into a socially punishing experience
+
+Key Findings:
+- Apple frames switching as a loss, not a choice
+- Each product increases switching costs and reinforces sunk cost bias
+- The result: 90%+ brand loyalty in the US, high lifetime customer value, and antitrust scrutiny from both the EU Digital Markets Act and US lawsuits
+
+Conclusion: Apple doesn't just build products people love — it builds an ecosystem people are afraid to leave.`,
+  },
+  {
+    id: 6,
+    type: "spotify",
+    episodeId: "5uOtGikKbqv0IhUU4Lp0Zc",
+    title: "Podcast Guest Appearance",
+    description:
+      "I joined The Josh and John Show — a podcast about cultural differences between Sweden and the US — to talk about studying at North Park University in Chicago, what makes the two cultures tick, and my soccer journey that took me all the way to Ecuador.",
+    category: "Podcast",
+    tags: ["speaking", "culture", "soccer", "swedish"],
+    year: 2025,
+    imageUrl: "public/assets/moel-jakob-holding.png",
+    link: null,
   },
   {
     id: 1,
