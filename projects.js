@@ -169,7 +169,7 @@ Shipping It: The entire project is version-controlled with GitHub and deployed o
       "Led a remote team of 5 to completely redesign a nonprofit's website in a single day. The results after 2 weeks: +261% page views, +100% checkouts, and +480% revenue per visit.",
     category: "Website Redesign & Team Leadership",
     tags: ["web", "design", "leadership"],
-    imageUrl: "public/assets/wla-redesign.png",
+    imageUrl: "public/assets/wla-screenshot-laptop.png",
     link: null,
     pdfUrl: "public/assets/WLA-Website-Evolution.pdf",
     kpiLabel: "Results after 2 weeks",
