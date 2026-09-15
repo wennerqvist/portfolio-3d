@@ -55,6 +55,7 @@ export const TAG_COLORS = {
   culture:          "#FB923C",
   swedish:          "#FACC15",
   neuromarketing:   "#C084FC",
+  photography:      "#2DD4BF",
 };
 
 export const projects = [
@@ -328,5 +329,77 @@ Target Audience:
 Strategy:
 - OOH ads and events in tech cities like San Francisco and Seattle to influence industry mindset towards sustainability
 - Digital campaign with video ads on YouTube, X, and GitHub to reach tech workers`,
+  },
+  {
+    id: 9,
+    title: "The Camera That Thinks It's 2003",
+    description:
+      "I enjoy shooting with vintage digital cameras, and my old Olympus is the most charming of the lot: a camera that thinks it's 2003 and stamps every photo accordingly. So my pal Claude and I spent an hour or two building a little Windows app that fixes the dates, straightens the sideways shots, and sends everything to Google Photos in one click.",
+    category: "Desktop App & Claude Code",
+    tags: ["ai", "photography"],
+    year: 2026,
+    imageUrl: "public/assets/olympus-cover.JPG",
+    caseImage: "public/assets/photo-uploader-app.png",
+    link: null,
+    caseLabel: "The Story",
+    kpiLabel: "The Payoff",
+    kpis: [
+      { value: "5 min → 30 sec", label: "Weekly routine, before and after" },
+      { value: "1 click", label: "From camera to Google Photos" },
+    ],
+    sectionImages: {
+      "The review grid": [
+        { src: "public/assets/photo-rotator-before.png", label: "Before" },
+        { src: "public/assets/photo-rotator-after.png", label: "After" },
+      ],
+    },
+    sectionPills: {
+      "Built with": [
+        "Python",
+        "tkinter",
+        "OpenCV",
+        "Pillow",
+        "piexif",
+        "Google Photos API",
+        "Claude Code",
+      ],
+    },
+    gallery: [
+      {
+        label: "Shot on the Olympus",
+        images: [
+          "public/assets/Olympus1.jpg",
+          "public/assets/Olympus2.jpg",
+          "public/assets/Olympus3.jpg",
+        ],
+      },
+    ],
+    fullDescription: `The problem:
+- Every photo is stamped with a date in 2003, so after every single upload I sat there fixing dates on my phone by hand.
+- It has no idea whether I am holding it landscape or portrait, so everything comes out sideways.
+- Getting photos from camera to laptop to iPhone was a tedious multi-step routine, and it ate a chunk of time every week.
+
+The solution:
+- I plug the camera in and the app finds it on its own.
+- I confirm the date and time, which defaults to right now.
+- The app analyses every photo and suggests an orientation.
+- I glance at the review grid and click any photo that needs a spin.
+- Everything uploads straight to Google Photos with the correct date.
+- The camera card itself is never modified: all edits happen on temporary copies, so the Olympus keeps living happily in 2003.
+- One click, about thirty seconds, and the more photos, the bigger the time save.
+
+The review grid: Auto-detect takes a first guess, I fix the rest with a click.
+
+How I got there:
+- The first version just fixed the dates and uploaded, and honestly that alone felt like magic.
+- Then I asked whether auto-rotation was even feasible, and we tried face detection with OpenCV.
+- Round one rotated the hats on my wall and left a vase alone.
+- Round two got so strict it rotated nothing at all.
+- Round three proudly flipped a face upside down.
+- The breakthrough was to stop chasing the perfect detector and add the review grid instead: the app takes a first guess, I fix the mistakes with a single click, and we are both much happier with this division of labour.
+
+Built with:
+
+What I learned: Mostly how easy it has become to build a real app for an everyday and very specific problem. Nobody was ever going to ship a product for people with a 2003-obsessed Olympus, and nobody needed to: with Claude Code it took an afternoon to build one just for me. And it is not only bad, by the way. In its defence, when it gets things right, it really gets them right: the proof is in the gallery below.`,
   },
 ];

@@ -1094,6 +1094,103 @@ body::-webkit-scrollbar {
   margin-top: 0;
 }
 
+/* Case study with an optional side image (project.caseImage) */
+.case-row {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+}
+
+.case-row .case-study {
+  flex: 1;
+  min-width: 0;
+}
+
+.case-aside-wrap {
+  flex: 0 0 320px;
+  width: 320px;
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.case-aside-wrap[hidden] {
+  display: none;
+}
+
+.case-aside-label {
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.case-aside {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Wide labeled figures inside the case study (sectionImages objects) */
+.case-figures {
+  margin-top: 1.2rem;
+  max-width: 68ch;
+  display: grid;
+  gap: 1.4rem;
+}
+
+.case-figure {
+  margin: 0;
+}
+
+.case-figure figcaption {
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.case-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Pill grid inside the case study (sectionPills) */
+.case-pills {
+  margin-top: 1rem;
+  max-width: 68ch;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.6rem;
+}
+
+.case-pill {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  font-family: "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(242, 242, 240, 0.75);
+  text-align: center;
+}
+
 /* ---------- Football / banner layout ---------- */
 
 .details-hero-banner[hidden] { display: none; }
@@ -1504,6 +1601,18 @@ body::-webkit-scrollbar {
 
   .case-section-row {
     flex-direction: column;
+  }
+
+  /* Side image moves above the story on small screens */
+  .case-row {
+    flex-direction: column-reverse;
+  }
+
+  .case-aside-wrap {
+    position: static;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 420px;
   }
 
   .case-section-images {

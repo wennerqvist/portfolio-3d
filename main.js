@@ -1,4 +1,8 @@
 import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { projects as PROJECTS, TAG_COLORS } from "./projects.js";
 
 function toSlug(title) {
@@ -22,7 +26,7 @@ function hexToRgba(hex, alpha) {
 }
 
 const DOME_RADIUS = 8; // the wire dome around the viewer
-const CARD_DISTANCE = 5.0; // cards float on the dome's inner wall
+const CARD_DISTANCE = 4.3; // cards float on the dome's inner wall
 
 /* ------------------------------------------------------------------ */
 /*  Scene setup — camera sits at the CENTER of the dome                */
@@ -47,6 +51,35 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// Post-processing: a subtle spherical/lens warp over the whole gallery. The
+// curvature is gentle at rest and grows a little with scroll/drag velocity,
+// then settles — the "distorted while you scroll" feel from phantom.land.
+const composer = new EffectComposer(renderer);
+composer.setSize(window.innerWidth, window.innerHeight);
+composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+composer.addPass(new RenderPass(scene, camera));
+
+const distortionPass = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, uStrength: { value: 0.0 } },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float uStrength;
+    varying vec2 vUv;
+    void main() {
+      vec2 uv = vUv - 0.5;
+      float r2 = dot(uv, uv);
+      uv *= 1.0 - uStrength * r2;   // barrel: edges pulled toward center (no clipping)
+      uv += 0.5;
+      gl_FragColor = texture2D(tDiffuse, uv);
+    }`,
+});
+composer.addPass(distortionPass);
+// OutputPass applies tone mapping + the sRGB conversion that a plain
+// renderer.render does automatically — without it the composer writes linear
+// color straight to the canvas, which looks dark and over-saturated.
+composer.addPass(new OutputPass());
 
 /* ------------------------------------------------------------------ */
 /*  Wire dome + particles (seen from the inside)                       */
@@ -144,7 +177,7 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
 }
 
 function createCardTexture(project, index) {
-  const { title, description, category } = project;
+  const { title, description } = project;
   const w = 512;
   const h = 640;
   const pad = 22; // transparent margin that holds the drop shadow
@@ -289,6 +322,16 @@ function createCardTexture(project, index) {
   return texture;
 }
 
+// Deterministic pseudo-random in [0,1) from a seed — stable across reloads so
+// the scattered layout stays put instead of reshuffling every visit.
+function seededRand(seed) {
+  const s = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+  return s - Math.floor(s);
+}
+
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // even spiral spacing
+const LAT_BAND = 0.55; // sin(~33°): keep the scatter within a viewable band
+
 const cards = [];
 PROJECTS.forEach((project, i) => {
   const material = new THREE.MeshBasicMaterial({
@@ -296,16 +339,23 @@ PROJECTS.forEach((project, i) => {
     transparent: true,
     color: 0xd8d8d8, // slightly dimmed at rest; hover brightens to full white
   });
-  const card = new THREE.Mesh(new THREE.PlaneGeometry(3, 3.75), material);
+  const card = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 2.625), material);
 
-  // Ring around the viewer, staggered up/down like a wall grid.
-  // Card 0 starts directly in front of the camera (-Z).
-  const angle = (i / PROJECTS.length) * Math.PI * 2;
-  const y = (i % 2 === 0 ? 1 : -1) * 1.4;
+  // Scatter cards over the sphere with a Fibonacci lattice (even, organic
+  // spread) confined to a latitude band, plus a little seeded jitter so it
+  // reads as random rather than a spiral. All cards share one radius so their
+  // sizes stay consistent.
+  const n = PROJECTS.length;
+  const t = n > 1 ? i / (n - 1) : 0.5;
+  let yNorm = (1 - 2 * t) * LAT_BAND;
+  yNorm += (seededRand(i) - 0.5) * 0.16;
+  yNorm = Math.max(-LAT_BAND, Math.min(LAT_BAND, yNorm));
+  const theta = GOLDEN_ANGLE * i + (seededRand(i + 100) - 0.5) * 0.55;
+  const ringR = Math.sqrt(Math.max(0, 1 - yNorm * yNorm));
   card.position.set(
-    Math.sin(angle) * CARD_DISTANCE,
-    y,
-    -Math.cos(angle) * CARD_DISTANCE
+    Math.cos(theta) * ringR * CARD_DISTANCE,
+    yNorm * CARD_DISTANCE,
+    Math.sin(theta) * ringR * CARD_DISTANCE
   );
   card.lookAt(0, 0, 0); // face the viewer at the center
   card.userData.basePosition = card.position.clone();
@@ -395,6 +445,8 @@ const detailsLink = document.getElementById("details-link");
 const detailsCaseSection = document.getElementById("details-case-section");
 const detailsCaseLabel = document.getElementById("details-case-label");
 const detailsCase = document.getElementById("details-case");
+const detailsCaseAside = document.getElementById("details-case-aside");
+const detailsCaseAsideWrap = document.getElementById("details-case-aside-wrap");
 const detailsKpiSection = document.getElementById("details-kpi-section");
 const detailsKpiLabel = document.getElementById("details-kpi-label");
 const detailsKpis = document.getElementById("details-kpis");
@@ -420,9 +472,14 @@ const detailsVideoLabel = document.getElementById("details-video-label");
 
 /* --- Case study: light markup from plain text. Blank lines separate
        blocks; "Label:" (with optional inline text) becomes a heading,
-       "- " lines become bullets, everything else a paragraph. --- */
+       "- " lines become bullets, everything else a paragraph.
+       Section extras (matched to a block by heading text):
+       - sectionImages["Heading"] = ["src", ...] → exp-card, images beside text
+       - sectionImages["Heading"] = [{ src, label }, ...] → wide labeled
+         figures below the text, full column width
+       - sectionPills["Heading"] = ["item", ...] → grid of pills --- */
 
-function renderCaseStudy(text, sectionImages) {
+function renderCaseStudy(text, sectionImages, sectionPills) {
   detailsCase.innerHTML = "";
   text.trim().split(/\n\s*\n/).forEach((block) => {
     let lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
@@ -435,7 +492,10 @@ function renderCaseStudy(text, sectionImages) {
       lines = headingMatch[2] ? [headingMatch[2], ...lines.slice(1)] : lines.slice(1);
     }
 
-    const images = headingText && sectionImages && sectionImages[headingText];
+    const entry = headingText && sectionImages && sectionImages[headingText];
+    const figures =
+      Array.isArray(entry) && entry.length && typeof entry[0] === "object" ? entry : null;
+    const images = figures ? null : entry;
     let textContainer;
 
     if (images) {
@@ -484,6 +544,37 @@ function renderCaseStudy(text, sectionImages) {
         ul.appendChild(li);
       });
       textContainer.appendChild(ul);
+    }
+
+    if (figures) {
+      const figGrid = document.createElement("div");
+      figGrid.className = "case-figures";
+      figures.forEach(({ src, label }) => {
+        const fig = document.createElement("figure");
+        fig.className = "case-figure";
+        const cap = document.createElement("figcaption");
+        cap.textContent = label;
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = label;
+        img.loading = "lazy";
+        fig.append(cap, img);
+        figGrid.appendChild(fig);
+      });
+      textContainer.appendChild(figGrid);
+    }
+
+    const pills = headingText && sectionPills && sectionPills[headingText];
+    if (pills) {
+      const pillGrid = document.createElement("div");
+      pillGrid.className = "case-pills";
+      pills.forEach((item) => {
+        const pill = document.createElement("span");
+        pill.className = "case-pill";
+        pill.textContent = item;
+        pillGrid.appendChild(pill);
+      });
+      textContainer.appendChild(pillGrid);
     }
   });
 }
@@ -664,8 +755,11 @@ function populateDetails(project, index) {
   detailsCaseSection.hidden = !project.fullDescription;
   if (project.fullDescription) {
     detailsCaseLabel.textContent = project.caseLabel || "Case Study";
-    renderCaseStudy(project.fullDescription, project.sectionImages);
+    renderCaseStudy(project.fullDescription, project.sectionImages, project.sectionPills);
   }
+  detailsCaseAsideWrap.hidden = !project.caseImage;
+  detailsCaseAside.src = project.caseImage || "";
+  detailsCaseAside.alt = project.caseImage ? project.title : "";
 
   const hasKpis = Boolean(project.kpis && project.kpis.length);
   detailsKpiSection.hidden = !hasKpis;
@@ -882,6 +976,8 @@ window.addEventListener("keydown", (e) => {
 /* ------------------------------------------------------------------ */
 
 const rotation = { x: 0, y: 0 };
+// Per-frame rotation velocity, smoothed, drives the lens-warp strength
+let prevRotY = 0, prevRotX = 0, warp = 0;
 // quickTo gives every rotation change the same smooth GSAP easing
 const rotateY = gsap.quickTo(rotation, "y", { duration: 1.4, ease: "power3.out" });
 const rotateX = gsap.quickTo(rotation, "x", { duration: 1.4, ease: "power3.out" });
@@ -1275,7 +1371,16 @@ gsap.ticker.add((time, deltaTime) => {
 
   updateHover();
   updateActiveCard();
-  renderer.render(scene, camera);
+
+  // scroll/drag velocity → subtle extra warp, smoothed, over a gentle
+  // resting curve; settles back toward the base curvature when idle
+  const dRot = Math.abs(rotation.y - prevRotY) + Math.abs(rotation.x - prevRotX);
+  prevRotY = rotation.y;
+  prevRotX = rotation.x;
+  warp += (dRot - warp) * 0.1;
+  distortionPass.uniforms.uStrength.value = Math.min(0.05 + warp * 8.0, 0.22);
+
+  composer.render();
 });
 gsap.ticker.lagSmoothing(0);
 
@@ -1288,6 +1393,8 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  composer.setSize(window.innerWidth, window.innerHeight);
+  composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
 /* ------------------------------------------------------------------ */

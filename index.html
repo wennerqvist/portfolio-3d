@@ -178,7 +178,13 @@
         </div>
         <div class="details-extra" id="details-case-section">
           <h3 class="extra-label" id="details-case-label">Case Study</h3>
-          <div class="case-study" id="details-case"></div>
+          <div class="case-row">
+            <div class="case-study" id="details-case"></div>
+            <div class="case-aside-wrap" id="details-case-aside-wrap" hidden>
+              <span class="case-aside-label">App Preview</span>
+              <img class="case-aside" id="details-case-aside" alt="" loading="lazy" />
+            </div>
+          </div>
         </div>
         <div class="details-extra" id="details-reviews-section">
           <h3 class="extra-label">Reader Reviews</h3>
@@ -249,7 +255,8 @@
   <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
       }
     }
   </script>
