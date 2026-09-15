@@ -993,7 +993,10 @@ if (isCoarsePointer) {
 }
 
 // --- Drag ---
-const DRAG_SENSITIVITY = 0.95; // full screen-width swipe ≈ a third of a turn
+// Touch swipes cover more of the screen than mouse drags and report higher
+// velocities, so coarse pointers get a gentler sensitivity to keep the globe
+// from spinning too far. Mouse (fine pointer) keeps the original feel.
+const DRAG_SENSITIVITY = isCoarsePointer ? 0.55 : 0.95; // full-width swipe ≈ a fifth (touch) / third (mouse) of a turn
 let dragging = false;
 let lastPointer = { x: 0, y: 0 };
 let dragVelocityY = 0; // smoothed, so a single jittery event can't spike inertia
@@ -1039,7 +1042,7 @@ const endDrag = () => {
   // long power3 ease in rotateY lets it glide smoothly to a stop.
   // Finger flicks report higher per-event velocities than mouse drags,
   // so touch gets a gentler multiplier to avoid overshooting.
-  targetY += dragVelocityY * (dragIsTouch ? 8 : 14);
+  targetY += dragVelocityY * (dragIsTouch ? 4 : 14);
   rotateY(targetY);
 };
 canvas.addEventListener("pointerup", (e) => {

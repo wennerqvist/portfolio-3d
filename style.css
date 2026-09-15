@@ -17,6 +17,9 @@ body {
   color: var(--fg);
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* Never allow sideways scrolling (mainly a mobile concern) — the vertical
+     Lenis scroll drives window, so this doesn't touch it */
+  overflow-x: hidden;
 }
 
 #webgl {
@@ -197,6 +200,7 @@ body::-webkit-scrollbar {
   );
   opacity: 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .page.open {
@@ -774,6 +778,7 @@ body::-webkit-scrollbar {
   background: rgba(10, 10, 10, 0.95);
   opacity: 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .details.open {
@@ -1601,11 +1606,15 @@ body::-webkit-scrollbar {
 
   .case-section-row {
     flex-direction: column;
+    align-items: stretch;
   }
 
-  /* Side image moves above the story on small screens */
+  /* Side image moves above the story on small screens. align-items must be
+     reset to stretch: the desktop `flex-start` would otherwise let the case
+     study shrink-wrap to its content width and overflow the narrow column. */
   .case-row {
     flex-direction: column-reverse;
+    align-items: stretch;
   }
 
   .case-aside-wrap {
@@ -1665,5 +1674,48 @@ body::-webkit-scrollbar {
 
   .exp-text {
     padding: 1.25rem;
+  }
+}
+
+/* ---------- Phones: reclaim width + guarantee content reflows ---------- */
+
+@media (max-width: 480px) {
+  /* Tighter side padding leaves more room for the actual content */
+  .details {
+    padding: 5rem 1.1rem 2.5rem;
+  }
+
+  .page {
+    padding: 7rem 1.1rem 2.5rem;
+  }
+
+  /* Nothing embedded should be able to push past the viewport edge */
+  .details img,
+  .details iframe,
+  .details canvas,
+  .page img {
+    max-width: 100%;
+  }
+
+  /* Let flex/grid text blocks shrink instead of forcing a wider row */
+  .details-content,
+  .case-study,
+  .exp-text {
+    min-width: 0;
+  }
+
+  /* Long single-token content (e.g. the contact email) wraps rather than
+     overflowing */
+  .contact-email,
+  .details-content p,
+  .case-study h4,
+  .case-study p,
+  .case-study li {
+    overflow-wrap: anywhere;
+  }
+
+  /* Pills grid: allow the tracks to shrink below 150px on very narrow screens */
+  .case-pills {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 }
