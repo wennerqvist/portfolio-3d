@@ -50,12 +50,14 @@ export const TAG_COLORS = {
   ai:               "#A78BFA",
   leadership:       "#4ADE80",
   advertising:      "#FB7185",
-  soccer:           "#86EFAC",
+  football:         "#86EFAC",
   speaking:         "#38BDF8",
   culture:          "#FB923C",
   swedish:          "#FACC15",
   neuromarketing:   "#C084FC",
   photography:      "#2DD4BF",
+  automation:       "#818CF8",
+  seo:              "#84CC16",
 };
 
 export const projects = [
@@ -146,7 +148,7 @@ The Result: Defended with highest honors, this thesis bridges the gap between cu
     description:
       "This portfolio website is a 3D interactive gallery built with Three.js, showcasing a spherical interior dome where project cards float in space. Built while learning Claude Code, it demonstrates how AI-assisted development can accelerate bringing ambitious ideas to life.",
     category: "Web Development & Claude Code",
-    tags: ["web", "ai"],
+    tags: ["web", "ai", "design"],
     imageUrl: "public/assets/portfolio-website-hero.png",
     link: null,
     fullDescription: `The Concept: This portfolio website is a 3D interactive gallery built with Three.js, showcasing a spherical interior dome where project cards float in space. The experience combines smooth drag-to-rotate interactions powered by GSAP animations and Lenis scroll easing, creating a fluid, immersive interface.
@@ -169,7 +171,7 @@ Shipping It: The entire project is version-controlled with GitHub and deployed o
     description:
       "Led a remote team of 5 to completely redesign a nonprofit's website in a single day. The results after 2 weeks: +261% page views, +100% checkouts, and +480% revenue per visit.",
     category: "Website Redesign & Team Leadership",
-    tags: ["web", "design", "leadership"],
+    tags: ["web", "design", "leadership", "seo"],
     imageUrl: "public/assets/wla-screenshot-laptop.png",
     link: null,
     pdfUrl: "public/assets/WLA-Website-Evolution.pdf",
@@ -216,7 +218,7 @@ The Outcome: Completely redesigned the website in one day. Only minor details ne
     description:
       "I'm a semi-professional football player with experience from the 4th tier in Sweden, a top college program in the US, Promozione in Italy, and a professional trial in Ecuador.",
     category: "Semi-Professional Football",
-    tags: ["soccer"],
+    tags: ["football"],
     year: 2025,
     imageUrl: "public/assets/npu-last-game.jpg",
     link: null,
@@ -259,7 +261,7 @@ North Park University — NCAA Division III:
     description:
       "Created for Neuromarketing class at Rome City Institute, this analysis explores how Apple engineers its ecosystem to trigger loss aversion — making users feel that switching brands means losing something valuable, not just changing a product.",
     category: "Neuromarketing Research",
-    tags: ["research", "neuromarketing"],
+    tags: ["research", "neuromarketing", "design"],
     year: 2026,
     imageUrl: "public/assets/loss-aversion-cover.jpg",
     pdfUrl: "public/assets/Loss-Aversion-Apple.pdf",
@@ -294,7 +296,7 @@ Conclusion: Apple doesn't just build products people love — it builds an ecosy
     description:
       "I joined The Josh and John Show — a podcast about cultural differences between Sweden and the US — to talk about studying at North Park University in Chicago, what makes the two cultures tick, and my soccer journey that took me all the way to Ecuador.",
     category: "Podcast",
-    tags: ["speaking", "culture", "soccer", "swedish"],
+    tags: ["speaking", "culture", "football", "swedish"],
     year: 2025,
     imageUrl: "public/assets/moel-jakob-holding.png",
     link: null,
@@ -305,7 +307,7 @@ Conclusion: Apple doesn't just build products people love — it builds an ecosy
     description:
       "Repositioned renewable energy company Ørsted from targeting environmentally-conscious consumers to positioning as the energy solution for scaling AI and cloud computing companies. Campaign emphasized the codependency between nature and human development through OOH ads and digital videos in tech hubs like San Francisco and Seattle.",
     category: "Advertising Campaign",
-    tags: ["advertising"],
+    tags: ["advertising", "design"],
     imageUrl: "public/assets/orsted-campaign.png",
     link: "https://youtu.be/5riIfXXbBmI?si=dW-0v9kB2_y0wnj1",
     youtubeId: "5riIfXXbBmI",
@@ -336,7 +338,7 @@ Strategy:
     description:
       "I enjoy shooting with vintage digital cameras, and my old Olympus is the most charming of the lot: a camera that thinks it's 2003 and stamps every photo accordingly. So my pal Claude and I spent an hour or two building a little Windows app that fixes the dates, straightens the sideways shots, and sends everything to Google Photos in one click.",
     category: "Desktop App & Claude Code",
-    tags: ["ai", "photography"],
+    tags: ["ai", "photography", "automation"],
     year: 2026,
     imageUrl: "public/assets/olympus-cover.JPG",
     caseImage: "public/assets/photo-uploader-app.png",

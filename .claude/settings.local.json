@@ -25,7 +25,8 @@
       "Bash(agent-browser scroll *)",
       "PowerShell($p = Start-Process -FilePath \"npx\" -ArgumentList \"serve\", \"-l\", \"4173\", \".\" -PassThru -WindowStyle Hidden; Start-Sleep -Seconds 5; $p.Id)",
       "Bash(curl *)",
-      "Bash(file moel-*.png wennerqvist-logo.png)"
+      "Bash(file moel-*.png wennerqvist-logo.png)",
+      "PowerShell(Get-NetFirewallRule *)"
     ]
   }
 }

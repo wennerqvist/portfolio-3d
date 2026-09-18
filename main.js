@@ -332,6 +332,17 @@ function seededRand(seed) {
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // even spiral spacing
 const LAT_BAND = 0.55; // sin(~33°): keep the scatter within a viewable band
 
+// These three landed in nearly the same azimuth slice by chance, reading as a
+// visual clump; nudge them apart. The camera project also got pushed low
+// enough to be easy to miss, so it gets an extra lift.
+const AZIMUTH_NUDGE_DEG = {
+  "WorldLangAmerica Website Redesign": 10,
+  "The Camera That Thinks It's 2003": -20,
+};
+const LATITUDE_NUDGE = {
+  "The Camera That Thinks It's 2003": 0.2,
+};
+
 const cards = [];
 PROJECTS.forEach((project, i) => {
   const material = new THREE.MeshBasicMaterial({
@@ -349,8 +360,10 @@ PROJECTS.forEach((project, i) => {
   const t = n > 1 ? i / (n - 1) : 0.5;
   let yNorm = (1 - 2 * t) * LAT_BAND;
   yNorm += (seededRand(i) - 0.5) * 0.16;
+  yNorm += LATITUDE_NUDGE[project.title] || 0;
   yNorm = Math.max(-LAT_BAND, Math.min(LAT_BAND, yNorm));
-  const theta = GOLDEN_ANGLE * i + (seededRand(i + 100) - 0.5) * 0.55;
+  let theta = GOLDEN_ANGLE * i + (seededRand(i + 100) - 0.5) * 0.55;
+  theta += ((AZIMUTH_NUDGE_DEG[project.title] || 0) * Math.PI) / 180;
   const ringR = Math.sqrt(Math.max(0, 1 - yNorm * yNorm));
   card.position.set(
     Math.cos(theta) * ringR * CARD_DISTANCE,
