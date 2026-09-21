@@ -341,7 +341,7 @@ Strategy:
     tags: ["ai", "photography", "automation"],
     year: 2026,
     imageUrl: "public/assets/olympus-cover.JPG",
-    caseImage: "public/assets/photo-uploader-app.png",
+    caseImage: "public/assets/photo-uploader-app.png?v=2",
     link: null,
     caseLabel: "The Story",
     kpiLabel: "The Payoff",
