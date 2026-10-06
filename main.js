@@ -176,6 +176,14 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
   if (line) ctx.fillText(line, x, y);
 }
 
+const NEW_BADGE_DAYS = 30; // how long the "NEW PROJECT" badge shows after addedDate
+
+function isNewProject(project) {
+  if (!project.addedDate) return false;
+  const ageMs = Date.now() - new Date(project.addedDate).getTime();
+  return ageMs >= 0 && ageMs < NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
+}
+
 function createCardTexture(project, index) {
   const { title, description } = project;
   const w = 512;
@@ -253,6 +261,27 @@ function createCardTexture(project, index) {
     const year = String(project.year || 2026);
     ctx.fillText(year, imgX + imgW - 18 - ctx.measureText(year).width, imgY + 34);
     ctx.restore();
+
+    // "NEW PROJECT" corner badge — shows for NEW_BADGE_DAYS after addedDate,
+    // then disappears on its own with no code changes needed.
+    if (isNewProject(project)) {
+      ctx.save();
+      roundedRectPath(ctx, pad, pad, w - pad * 2, h - pad * 2, 26);
+      ctx.clip();
+      const badgeLabel = "NEW PROJECT";
+      ctx.font = "700 16px Helvetica, Arial, sans-serif";
+      const badgeW = ctx.measureText(badgeLabel).width + 32;
+      const badgeH = 34;
+      const badgeX = w - pad - badgeW;
+      const badgeY = pad;
+      ctx.fillStyle = "#FBBF24";
+      ctx.fillRect(badgeX, badgeY, badgeW, badgeH);
+      ctx.fillStyle = "#161616";
+      ctx.textAlign = "center";
+      ctx.fillText(badgeLabel, badgeX + badgeW / 2, badgeY + badgeH / 2 + 6);
+      ctx.textAlign = "left";
+      ctx.restore();
+    }
 
     // Title — shrink to fit the card width; names still too long at the
     // minimum size wrap onto a second line (and trade one description line)
@@ -343,6 +372,30 @@ const LATITUDE_NUDGE = {
   "The Camera That Thinks It's 2003": 0.2,
 };
 
+// Soft radial glow, used as a "shining star" backdrop behind new-project cards
+function createGlowTexture() {
+  const size = 256;
+  const canvas = Object.assign(document.createElement("canvas"), {
+    width: size,
+    height: size,
+  });
+  const ctx = canvas.getContext("2d");
+  const gradient = ctx.createRadialGradient(
+    size / 2, size / 2, 0,
+    size / 2, size / 2, size / 2
+  );
+  gradient.addColorStop(0, "rgba(255, 255, 255, 0.95)");
+  gradient.addColorStop(0.25, "rgba(255, 255, 255, 0.5)");
+  gradient.addColorStop(0.55, "rgba(255, 255, 255, 0.15)");
+  gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+const GLOW_TEXTURE = createGlowTexture();
+
 const cards = [];
 PROJECTS.forEach((project, i) => {
   const material = new THREE.MeshBasicMaterial({
@@ -378,6 +431,40 @@ PROJECTS.forEach((project, i) => {
 
   world.add(card);
   cards.push(card);
+
+  // "New project" cards get a softly pulsing glow behind them, like a star
+  // shining through the dome wall — same addedDate-based condition as the
+  // NEW PROJECT badge, so it disappears on its own after NEW_BADGE_DAYS too.
+  if (isNewProject(project)) {
+    const glowMaterial = new THREE.SpriteMaterial({
+      map: GLOW_TEXTURE,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const glow = new THREE.Sprite(glowMaterial);
+    const direction = card.position.clone().normalize();
+    glow.position.copy(direction.multiplyScalar(CARD_DISTANCE + 0.5));
+    glow.scale.set(4.2, 4.2, 1);
+    glow.renderOrder = -1;
+    world.add(glow);
+
+    gsap.to(glow.scale, {
+      x: 4.8,
+      y: 4.8,
+      duration: 2.2,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+    });
+    gsap.to(glowMaterial, {
+      opacity: 0.7,
+      duration: 2.2,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+    });
+  }
 });
 
 /* ------------------------------------------------------------------ */

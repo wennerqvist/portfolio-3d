@@ -39,6 +39,9 @@
 /*    reviewsLink optional — "Read more reviews" link shown under the  */
 /*                review cards                                         */
 /*    tags        array of tag keys from TAG_COLORS (e.g. ["web","ai"])*/
+/*    addedDate   optional — "YYYY-MM-DD" string. Shows a "NEW PROJECT"  */
+/*                badge on the card for 30 days after this date, then   */
+/*                it disappears automatically — no code change needed. */
 /* ------------------------------------------------------------------ */
 
 export const TAG_COLORS = {
@@ -412,6 +415,7 @@ What I learned: Mostly how easy it has become to build a real app for an everyda
     category: "Personal Tool & Claude Code",
     tags: ["web", "ai", "automation"],
     year: 2026,
+    addedDate: "2026-10-06",
     imageUrl: "public/assets/bostadsko-webpage.jpg",
     link: null,
     caseLabel: "The Story",
