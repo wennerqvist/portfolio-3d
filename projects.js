@@ -404,4 +404,44 @@ Built with:
 
 What I learned: Mostly how easy it has become to build a real app for an everyday and very specific problem. Nobody was ever going to ship a product for people with a 2003-obsessed Olympus, and nobody needed to: with Claude Code it took an afternoon to build one just for me. And it is not only bad, by the way. In its defence, when it gets things right, it really gets them right: the proof is in the gallery below.`,
   },
+  {
+    id: 10,
+    title: "Making Sense of the Apartment Market",
+    description:
+      "Finding an apartment in Gothenburg means checking two housing queue sites, each with its own rules, and it's easy to miss a listing or waste an application. So I built one page, together with Claude Code, that puts every listing from both sites on a single map, scores how realistic each one is, and pings my phone the moment something new fits.",
+    category: "Personal Tool & Claude Code",
+    tags: ["web", "ai", "automation"],
+    year: 2026,
+    imageUrl: "public/assets/bostadsko-webpage.jpg",
+    link: null,
+    caseLabel: "The Story",
+    sectionImages: {
+      "Telegram alerts": [
+        { src: "public/assets/bostadsko-notification.png", label: "What lands in Telegram" },
+      ],
+    },
+    fullDescription: `The problem:
+- Gothenburg's rental apartments are split across two housing queues, Boplats and HomeQ, and the two don't talk to each other.
+- Each site has its own rules for who actually wins a listing: queue time, points, first-come, or even a lottery.
+- Checking both, by hand, every day, is tedious, and it's easy to miss a listing or spend an application on a flat you never really had a shot at.
+
+How it works:
+- One map of Gothenburg shows every active listing from both sites at once, colour-coded: green for likely, yellow for possible, red for unlikely, and grey for listings outside my filters (rent, size and rooms).
+- Tapping a pin opens a card with the details that matter: rent, size, rooms, move-in date, deadline, and a link back to the original listing.
+- Behind every pin sits a chance score, built from the numbers each site already publishes, like queue time needed, points needed and applicant counts, then adjusted for whichever allocation rule that particular landlord is using.
+- Every time the collector runs, it also saves a snapshot of the points or queue time it took to be a top applicant, building up a history it can use to judge how realistic a similar listing is likely to be in the future.
+
+Telegram alerts: A daily digest lands on my phone each morning with anything new that matches.
+
+How I built it:
+- A small Python script visits both sites every few hours, politely: one request at a time, a short pause in between, and it never re-checks a listing it already has.
+- Everything it finds goes into one SQLite file, which is really just a tiny database that lives as a single file on disk, no server or password required.
+- The page itself is plain HTML with a Leaflet map on top of OpenStreetMap tiles, nothing fancier than that.
+- GitHub Pages hosts the page for free, and GitHub Actions wakes the robot up every few hours to fetch, score and republish, even while my laptop is closed.
+- A Telegram bot sends the alerts, which took about two minutes to set up.
+- I'm not a developer by trade, so I built it step by step with Claude Code, one feature at a time: first the collector, then the map, then the scoring, then the automation. Each piece got its own test against a saved copy of the real page, so if Boplats or HomeQ ever redesigns their site, a test breaks instead of my morning alerts quietly going dark.
+- The whole thing costs 0 kr a month, and there's nothing to babysit.
+
+Result: What exists today is a finished, tested tool I actually use every morning: one map instead of two browser tabs, a score instead of a guess, and a phone buzz instead of a page I'd forget to check. Zero monthly cost, and it just runs.`,
+  },
 ];
