@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jakob Wennerqvist — Portfolio</title>
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=5" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 </head>
 <body>
@@ -17,6 +17,7 @@
     <nav class="nav">
       <a href="#work" data-page="work" class="active">Work</a>
       <a href="#about" data-page="about">About</a>
+      <a href="#writing" data-page="writing">Off the Clock</a>
       <a href="#contact" data-page="contact">Contact</a>
     </nav>
   </header>
@@ -102,12 +103,33 @@
     </div>
   </section>
 
+  <!-- Off the Clock page (Substack posts, populated from public/data/substack-posts.json) -->
+  <section class="page" id="page-writing" data-lenis-prevent>
+    <div class="page-inner">
+      <button class="page-back" data-page="work" type="button">&larr; Back to gallery</button>
+      <div class="page-meta">
+        <span>03</span>
+        <span>Off the Clock</span>
+      </div>
+      <h2 class="page-title">Off the<br />Clock</h2>
+      <p class="writing-lede">
+        Unfiltered thoughts on marketing, AI, and whatever else is rattling
+        around up there &mdash; written for fun, posted on
+        <a href="https://selfbrainedbyjakob.substack.com/" target="_blank" rel="noopener">Substack</a>.
+      </p>
+      <a class="writing-subscribe" href="https://selfbrainedbyjakob.substack.com/subscribe" target="_blank" rel="noopener">Subscribe for free <span class="arrow">&#8599;</span></a>
+      <div class="writing-list" id="writing-list">
+        <p class="writing-status" id="writing-status">Loading posts&hellip;</p>
+      </div>
+    </div>
+  </section>
+
   <!-- Contact page -->
   <section class="page" id="page-contact" data-lenis-prevent>
     <div class="page-inner">
       <button class="page-back" data-page="work" type="button">&larr; Back to gallery</button>
       <div class="page-meta">
-        <span>03</span>
+        <span>04</span>
         <span>Contact</span>
       </div>
       <h2 class="page-title">Let's<br />Talk</h2>
@@ -260,6 +282,6 @@
       }
     }
   </script>
-  <script type="module" src="main.js?v=2"></script>
+  <script type="module" src="main.js?v=3"></script>
 </body>
 </html>

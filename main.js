@@ -1319,9 +1319,59 @@ document.querySelectorAll("#page-contact .page-title").forEach((title) => {
 
 const PAGES = {
   about: document.getElementById("page-about"),
+  writing: document.getElementById("page-writing"),
   contact: document.getElementById("page-contact"),
 };
 const navLinks = document.querySelectorAll("[data-page]");
+
+/* ------------------------------------------------------------------ */
+/*  Off the Clock — Substack posts, pre-fetched into a static JSON     */
+/*  file (see scripts/fetch-substack.js) so the page never hits        */
+/*  Substack's feed directly from the browser.                         */
+/* ------------------------------------------------------------------ */
+
+const writingList = document.getElementById("writing-list");
+const writingStatus = document.getElementById("writing-status");
+const postDateFormat = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+fetch("public/data/substack-posts.json")
+  .then((res) => {
+    if (!res.ok) throw new Error(`${res.status}`);
+    return res.json();
+  })
+  .then(({ posts }) => {
+    if (!posts || !posts.length) {
+      writingStatus.textContent = "No posts yet — check back soon.";
+      return;
+    }
+    writingList.innerHTML = "";
+    posts.forEach((post) => {
+      const card = document.createElement("a");
+      card.className = "writing-card";
+      card.href = post.link;
+      card.target = "_blank";
+      card.rel = "noopener";
+
+      const date = document.createElement("span");
+      date.className = "writing-card-date";
+      const parsed = post.pubDate ? new Date(post.pubDate) : null;
+      date.textContent = parsed && !Number.isNaN(parsed.getTime()) ? postDateFormat.format(parsed) : "";
+
+      const title = document.createElement("h3");
+      title.className = "writing-card-title";
+      title.textContent = post.title;
+
+      const excerpt = document.createElement("p");
+      excerpt.className = "writing-card-excerpt";
+      excerpt.textContent = post.excerpt;
+
+      card.append(date, title, excerpt);
+      writingList.append(card);
+    });
+  })
+  .catch(() => {
+    writingStatus.textContent = "Couldn't load posts right now — read them on Substack instead.";
+  });
 
 let currentPage = "work";
 let pageTl = null;
