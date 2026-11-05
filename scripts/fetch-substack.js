@@ -49,7 +49,12 @@ function excerptFrom(description, contentEncoded) {
 }
 
 async function main() {
-  const res = await fetch(FEED_URL);
+  const res = await fetch(FEED_URL, {
+    headers: {
+      "User-Agent": "wennerqvist-portfolio-substack-fetcher/1.0 (+https://wennerqvist.org)",
+      Accept: "application/rss+xml, application/xml, text/xml, */*",
+    },
+  });
   if (!res.ok) throw new Error(`Substack feed request failed: ${res.status}`);
   const xml = await res.text();
 
