@@ -367,6 +367,10 @@ const LAT_BAND = 0.55; // sin(~33°): keep the scatter within a viewable band
 const AZIMUTH_NUDGE_DEG = {
   "WorldLangAmerica Website Redesign": 10,
   "The Camera That Thinks It's 2003": -20,
+  // Adding "From Field to Feed" at the front of the array shifted everyone
+  // else's index, which clumped it with these two into the same slice.
+  "Ørsted Advertising Campaign": 42,
+  "How I Made This Website": 130,
 };
 const LATITUDE_NUDGE = {
   "The Camera That Thinks It's 2003": 0.2,

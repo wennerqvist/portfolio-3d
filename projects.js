@@ -61,9 +61,63 @@ export const TAG_COLORS = {
   photography:      "#2DD4BF",
   automation:       "#818CF8",
   seo:              "#84CC16",
+  content:          "#E879F9",
 };
 
 export const projects = [
+  {
+    id: 11,
+    title: "From Field to Feed",
+    description:
+      "I shot, edited and delivered the photo, video and content for an innovative artificial turf infill manufacturer when they were hosting an open house in Lund, Sweden.",
+    category: "Freelance Photo, Video & Content Production",
+    tags: ["photography", "content"],
+    year: 2026,
+    addedDate: "2026-11-14",
+    imageUrl: "public/assets/Linero-cover.jpg",
+    link: "https://lnkd.in/p/dAp6wuHh",
+    linkLabel: "See the post on LinkedIn",
+    caseLabel: "The Story",
+    kpiLabel: "The Numbers",
+    kpis: [
+      { value: "2 h", label: "Shooting on site" },
+      { value: "20+ h", label: "Editing and packaging" },
+      { value: "51", label: "Edited photos delivered" },
+      { value: "37+", label: "Edited video clips delivered" },
+      { value: "3", label: "LinkedIn posts" },
+      { value: "1", label: "Webcase" },
+    ],
+    gallery: [
+      {
+        label: "From the open house",
+        images: [
+          "public/assets/linero-gallery-1.jpg",
+          "public/assets/linero-gallery-2.jpg",
+          "public/assets/linero-gallery-3.jpg",
+          "public/assets/linero-gallery-4.jpg",
+          "public/assets/linero-gallery-5.jpg",
+          "public/assets/linero-gallery-6.jpg",
+        ],
+      },
+    ],
+    fullDescription: `The Brief: BIQ Materials needed fresh photo and video content from their open house at Linero IP, covering the new field, the people, the machines and the games, all packaged so their team could put it to use right away across web and social media. The deadline was short, and I took the project on at short notice.
+
+The Approach:
+- Shot everything on site during the open house, catching the field, the people, the machines and the games as they happened.
+- Sorted the material into a clear, themed bank so BIQ Materials could find exactly what they needed.
+- Polished every image and clip for one consistent look.
+- Packaged the strongest material into ready-to-use content, including LinkedIn posts and a webcase, and delivered everything in priority order so the most useful material reached the team first.
+
+The Result: One of the three LinkedIn posts features the interview with Limonta, where they talk about the new field in Lund. You can watch it through the LinkedIn link on this page.
+
+What I delivered:
+- A photo bank of 51 edited photos in 8 themed folders
+- A video bank of 37 edited B-roll clips
+- An interview film with Limonta about the new field in Lund
+- Short-format video proposals for social media
+- 3 LinkedIn posts
+- 1 webcase`,
+  },
   {
     id: 5,
     title: "Moel the Mole",
