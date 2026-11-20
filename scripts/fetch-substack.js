@@ -79,12 +79,28 @@ async function main() {
     image: imageFrom(item),
   }));
 
+  // Reuse the previous updatedAt when the posts themselves haven't changed,
+  // so the output file (and git diff) stays identical on days with no new
+  // article. The CI workflow only commits/deploys when this file changes.
+  let previous = null;
+  try {
+    previous = JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8"));
+  } catch {
+    previous = null;
+  }
+  const postsUnchanged = previous && JSON.stringify(previous.posts) === JSON.stringify(posts);
+  const updatedAt = postsUnchanged ? previous.updatedAt : new Date().toISOString();
+
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
   fs.writeFileSync(
     OUTPUT_PATH,
-    JSON.stringify({ updatedAt: new Date().toISOString(), posts }, null, 2) + "\n"
+    JSON.stringify({ updatedAt, posts }, null, 2) + "\n"
   );
-  console.log(`Wrote ${posts.length} post(s) to ${path.relative(process.cwd(), OUTPUT_PATH)}`);
+  console.log(
+    postsUnchanged
+      ? "No new posts; output unchanged."
+      : `Wrote ${posts.length} post(s) to ${path.relative(process.cwd(), OUTPUT_PATH)}`
+  );
 }
 
 main().catch((err) => {
