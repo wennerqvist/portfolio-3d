@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wennerqvist.org/sitemap.xml
